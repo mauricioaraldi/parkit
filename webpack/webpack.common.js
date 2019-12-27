@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: Path.resolve(__dirname, '../static/index.js'),
+  entry: Path.resolve(__dirname, '../src/scripts/index.js'),
   output: {
     path: Path.join(__dirname, '../dist'),
     filename: '[name].js'
@@ -18,10 +18,11 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
-      { from: Path.resolve(__dirname, '../static/*.css'), to: '', flatten: true }
+      { from: Path.resolve(__dirname, '../public'), to: '', flatten: true },
+      { from: Path.resolve(__dirname, '../src/styles/'), to: '', flatten: true }
     ]),
     new HtmlWebpackPlugin({
-      template: Path.resolve(__dirname, '../pages/index.html'),
+      template: Path.resolve(__dirname, '../src/index.html'),
       minify: {
         collapseWhitespace: true,
         removeComments: true,
@@ -34,7 +35,7 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      '~': Path.resolve(__dirname, '../')
+      '~': Path.resolve(__dirname, '../src')
     }
   },
   module: {
