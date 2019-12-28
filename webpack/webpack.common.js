@@ -19,7 +19,6 @@ module.exports = {
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
       { from: Path.resolve(__dirname, '../public'), to: '', flatten: true },
-      { from: Path.resolve(__dirname, '../src/styles/'), to: '', flatten: true }
     ]),
     new HtmlWebpackPlugin({
       template: Path.resolve(__dirname, '../src/index.html'),
@@ -54,6 +53,10 @@ module.exports = {
           }
         }
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      }
     ]
   }
 };
