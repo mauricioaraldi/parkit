@@ -98,7 +98,8 @@ function buildPlayerCar() {
     y: CAR_HEIGHT + 60,
     width: CAR_WIDTH,
     height: CAR_HEIGHT,
-    sensors: {},
+    sensors: null,
+    sensorRange: SENSOR_RANGE,
   };
 }
 
@@ -123,31 +124,104 @@ function updatePlayerCar(car) {
  * @author mauricio.araldi
  * @since 0.1.0
  *
- * @param {Object} The player's car
- * @return {Object} The sensors of the car
+ * @param {Object} car The player's car
+ * @param {Array<Object>} objects All the objects in the scenery
+ * @return {Object} The sensors of the car, with their readings
  */
-function updatePlayerCarSensors(car, cars) {
-  cars.forEach((parkedCar) => {
-    if (
-      parkedCar.x < car.x + car.width + SENSOR_RANGE
-      && parkedCar.x + parkedCar.width > car.x - SENSOR_RANGE
-      && parkedCar.y < car.y + car.height + SENSOR_RANGE
-      && parkedCar.height + parkedCar.y > car.y - SENSOR_RANGE
-    ) {
-      console.log(car, parkedCar);
-    }
+function getPlayerCarSensorsReadings(car, objects) {
+  const sensors = { ...car.sensors };
+
+  Object.keys(sensors).forEach((key) => {
+    const sensor = sensors[key];
+
+    // objects.forEach((object) => {
+    //   if (
+    //     sensor[key].x < object.x + object.width + SENSOR_RANGE
+    //     && sensor[key].x + sensor[key].width > object.x - SENSOR_RANGE
+    //     && sensor[key].y < object.y + object.height + SENSOR_RANGE
+    //     && sensor[key].height + sensor[key].y > object.y - SENSOR_RANGE
+    //   ) {
+    //     console.log(object, sensor[key]);
+    //   }
+    // });
   });
 
-  return {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
+  return sensors;
+}
+
+/**
+ * Builds the sensors of a car
+ *
+ * @author mauricio.araldi
+ * @since 0.1.0
+ *
+ * @param {Object} car The car to have its sensors built
+ * @return {Object} The sensors of the car
+ */
+function buildSensors(car) {
+  const halfCarWidth = car.width / 2;
+  const halfCarHeight = car.height / 2;
+  const halfSensorRange = car.sensorRange / 2;
+  const sensors = {
+    1: {
+      x: car.x - car.sensorRange,
+      y: car.y - car.sensorRange,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    2: {
+      x: car.x + halfCarWidth - halfSensorRange,
+      y: car.y - car.sensorRange,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    3: {
+      x: car.x + car.width,
+      y: car.y - car.sensorRange,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    4: {
+      x: car.x + car.width,
+      y: car.y + halfCarHeight - halfSensorRange,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    5: {
+      x: car.x + car.width,
+      y: car.y + car.height,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    6: {
+      x: car.x + halfCarWidth - halfSensorRange,
+      y: car.y + car.height,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    7: {
+      x: car.x - car.sensorRange,
+      y: car.y + car.height,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
+    8: {
+      x: car.x - car.sensorRange,
+      y: car.y + halfCarHeight - halfSensorRange,
+      width: car.sensorRange,
+      height: car.sensorRange,
+      reading: 0,
+    },
   };
+
+  return sensors;
 }
 
 /**
@@ -160,7 +234,26 @@ function updatePlayerCarSensors(car, cars) {
  */
 function updateSensorsDisplay(sensors) {
   Object.keys(sensors).forEach((key) => {
-    document.querySelector(`#sensor${key}`).value = sensors[key];
+    document.querySelector(`#sensor${key}`).value = sensors[key].reading;
+  });
+}
+
+/**
+ * Draws the sensors to show their ranges
+ *
+ * @author mauricio.araldi
+ * @since 0.1.0
+ *
+ * @param {CanvasRenderingContext2D} ctx Canvas context do render content
+ * @param {Object} sensors The sensors to be drawn
+ * @return {Boolean} If the sensors were drew
+ */
+function drawSensors(ctx, sensors) {
+  Object.keys(sensors).forEach((key) => {
+    const sensor = sensors[key];
+
+    ctx.fillStyle = 'rgba(150, 180, 160, 0.5)';
+    ctx.fillRect(sensor.x, sensor.y, sensor.width, sensor.height);
   });
 }
 
@@ -178,6 +271,7 @@ function playAnimation(play) {
   const parkedCars = buildParkedCars(2);
   const sensorCode = codeMirror.getValue();
   const carInstructions = {};
+  const highlightSensors = true;
   let playerCar = buildPlayerCar();
 
   if (play && !ticker) {
@@ -189,13 +283,20 @@ function playAnimation(play) {
       delete carInstructions.y;
       delete carInstructions.width;
       delete carInstructions.height;
+      delete carInstructions.sensorRange;
       delete carInstructions.sensors;
 
-      playerCar.sensors = updatePlayerCarSensors(playerCar, parkedCars);
+      playerCar.sensors = getPlayerCarSensorsReadings(playerCar, [...parkedCars]);
       updateSensorsDisplay(playerCar.sensors);
       playerCar = updatePlayerCar({ ...playerCar, ...carInstructions });
       drawAsphalt(ctx);
       drawCars(ctx, [...parkedCars, playerCar]);
+
+      playerCar.sensors = buildSensors(playerCar);
+
+      if (highlightSensors) {
+        drawSensors(ctx, playerCar.sensors);
+      }
     }, 1000 / FRAMES_PER_SECOND);
   } if (!play) {
     clearInterval(ticker);
