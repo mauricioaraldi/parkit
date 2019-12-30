@@ -134,16 +134,16 @@ function getPlayerCarSensorsReadings(car, objects) {
   Object.keys(sensors).forEach((key) => {
     const sensor = sensors[key];
 
-    // objects.forEach((object) => {
-    //   if (
-    //     sensor[key].x < object.x + object.width + SENSOR_RANGE
-    //     && sensor[key].x + sensor[key].width > object.x - SENSOR_RANGE
-    //     && sensor[key].y < object.y + object.height + SENSOR_RANGE
-    //     && sensor[key].height + sensor[key].y > object.y - SENSOR_RANGE
-    //   ) {
-    //     console.log(object, sensor[key]);
-    //   }
-    // });
+    objects.forEach((object) => {
+      if (
+        sensor.x < object.x + object.width
+        && sensor.x + sensor.width > object.x
+        && sensor.y < object.y + object.height
+        && sensor.height + sensor.y > object.y
+      ) {
+        sensor.reading = 1;
+      }
+    });
   });
 
   return sensors;
@@ -252,8 +252,22 @@ function drawSensors(ctx, sensors) {
   Object.keys(sensors).forEach((key) => {
     const sensor = sensors[key];
 
-    ctx.fillStyle = 'rgba(150, 180, 160, 0.5)';
+    if (sensor.reading) {
+      ctx.fillStyle = 'rgba(190, 38, 37, 0.5)';
+    } else {
+      ctx.fillStyle = 'rgba(170, 165, 131, 0.5)';
+    }
     ctx.fillRect(sensor.x, sensor.y, sensor.width, sensor.height);
+
+    ctx.fillStyle = '#000000';
+    ctx.textAlign = 'center';
+    ctx.font = '16px serif';
+    ctx.fillText(key, sensor.x + 5, sensor.y + 13);
+
+    ctx.fillStyle = '#000000';
+    ctx.textAlign = 'center';
+    ctx.font = '34px serif';
+    ctx.fillText(sensor.reading, sensor.x + sensor.width - 30, sensor.y + sensor.height - 18);
   });
 }
 
@@ -274,9 +288,11 @@ function playAnimation(play) {
   const highlightSensors = true;
   let playerCar = buildPlayerCar();
 
+  carInstructions.sensors = playerCar.sensors;
+
   if (play && !ticker) {
     ticker = setInterval(() => {
-      eval.call({}, `(${sensorCode})`)(playerCar.sensors, carInstructions); // eslint-disable-line no-eval
+      eval.call({}, `(${sensorCode})`)(carInstructions); // eslint-disable-line no-eval
 
       delete carInstructions.color;
       delete carInstructions.x;
@@ -286,13 +302,13 @@ function playAnimation(play) {
       delete carInstructions.sensorRange;
       delete carInstructions.sensors;
 
+      playerCar = updatePlayerCar({ ...playerCar, ...carInstructions });
+      playerCar.sensors = buildSensors(playerCar);
       playerCar.sensors = getPlayerCarSensorsReadings(playerCar, [...parkedCars]);
       updateSensorsDisplay(playerCar.sensors);
-      playerCar = updatePlayerCar({ ...playerCar, ...carInstructions });
       drawAsphalt(ctx);
       drawCars(ctx, [...parkedCars, playerCar]);
 
-      playerCar.sensors = buildSensors(playerCar);
 
       if (highlightSensors) {
         drawSensors(ctx, playerCar.sensors);
@@ -319,7 +335,7 @@ window.onload = () => {
     theme: 'paraiso-dark',
   });
 
-  codeMirror.getDoc().setValue('function carBrain(sensor, car) {\n  car.speed = 10;\n}');
+  codeMirror.getDoc().setValue('function carBrain(car) {\n  car.speed = 10;\n}');
 
   playAnimation(false);
 };
