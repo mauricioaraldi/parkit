@@ -136,10 +136,10 @@ function getPlayerCarSensorsReadings(car, objects) {
 
     objects.forEach((object) => {
       if (
-        sensor.x < object.x + object.width
-        && sensor.x + sensor.width > object.x
-        && sensor.y < object.y + object.height
-        && sensor.height + sensor.y > object.y
+        sensor.collisionBox.x < object.x + object.width
+        && sensor.collisionBox.x + sensor.collisionBox.width > object.x
+        && sensor.collisionBox.y < object.y + object.height
+        && sensor.collisionBox.height + sensor.collisionBox.y > object.y
       ) {
         sensor.reading = 1;
       }
@@ -164,59 +164,115 @@ function buildSensors(car) {
   const halfSensorRange = car.sensorRange / 2;
   const sensors = {
     1: {
-      x: car.x - car.sensorRange,
-      y: car.y - car.sensorRange,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x, y: car.y },
+        b: { x: car.x - car.sensorRange, y: car.y },
+        c: { x: car.x, y: car.y - car.sensorRange },
+      },
+      collisionBox: {
+        x: car.x - car.sensorRange,
+        y: car.y - car.sensorRange,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     2: {
-      x: car.x + halfCarWidth - halfSensorRange,
-      y: car.y - car.sensorRange,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x + halfCarWidth, y: car.y },
+        b: { x: car.x + halfCarWidth - halfSensorRange, y: car.y - car.sensorRange },
+        c: { x: car.x + halfCarWidth + halfSensorRange, y: car.y - car.sensorRange },
+      },
+      collisionBox: {
+        x: car.x + halfCarWidth - halfSensorRange,
+        y: car.y - car.sensorRange,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     3: {
-      x: car.x + car.width,
-      y: car.y - car.sensorRange,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x + car.width, y: car.y },
+        b: { x: car.x + car.width, y: car.y - car.sensorRange },
+        c: { x: car.x + car.width + car.sensorRange, y: car.y },
+      },
+      collisionBox: {
+        x: car.x + car.width,
+        y: car.y - car.sensorRange,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     4: {
-      x: car.x + car.width,
-      y: car.y + halfCarHeight - halfSensorRange,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x + car.width, y: car.y + halfCarHeight },
+        b: { x: car.x + car.width + car.sensorRange, y: car.y + halfCarHeight - halfSensorRange },
+        c: { x: car.x + car.width + car.sensorRange, y: car.y + halfCarHeight + halfSensorRange },
+      },
+      collisionBox: {
+        x: car.x + car.width,
+        y: car.y + halfCarHeight - halfSensorRange,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     5: {
-      x: car.x + car.width,
-      y: car.y + car.height,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x + car.width, y: car.y + car.height },
+        b: { x: car.x + car.width + car.sensorRange, y: car.y + car.height },
+        c: { x: car.x + car.width, y: car.y + car.height + car.sensorRange },
+      },
+      collisionBox: {
+        x: car.x + car.width,
+        y: car.y + car.height,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     6: {
-      x: car.x + halfCarWidth - halfSensorRange,
-      y: car.y + car.height,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x + halfCarWidth, y: car.y + car.height },
+        b: { x: car.x + halfCarWidth + halfSensorRange, y: car.y + car.height + car.sensorRange },
+        c: { x: car.x + halfCarWidth - halfSensorRange, y: car.y + car.height + car.sensorRange },
+      },
+      collisionBox: {
+        x: car.x + halfCarWidth - halfSensorRange,
+        y: car.y + car.height,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     7: {
-      x: car.x - car.sensorRange,
-      y: car.y + car.height,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x, y: car.y + car.height },
+        b: { x: car.x, y: car.y + car.height + car.sensorRange },
+        c: { x: car.x - car.sensorRange, y: car.y + car.height },
+      },
+      collisionBox: {
+        x: car.x - car.sensorRange,
+        y: car.y + car.height,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
     8: {
-      x: car.x - car.sensorRange,
-      y: car.y + halfCarHeight - halfSensorRange,
-      width: car.sensorRange,
-      height: car.sensorRange,
+      shape: {
+        a: { x: car.x, y: car.y + halfCarHeight },
+        b: { x: car.x - car.sensorRange, y: car.y + halfCarHeight + halfSensorRange },
+        c: { x: car.x - car.sensorRange, y: car.y + halfCarHeight - halfSensorRange },
+      },
+      collisionBox: {
+        x: car.x - car.sensorRange,
+        y: car.y + halfCarHeight - halfSensorRange,
+        width: car.sensorRange,
+        height: car.sensorRange,
+      },
       reading: 0,
     },
   };
@@ -257,17 +313,24 @@ function drawSensors(ctx, sensors) {
     } else {
       ctx.fillStyle = 'rgba(170, 165, 131, 0.5)';
     }
-    ctx.fillRect(sensor.x, sensor.y, sensor.width, sensor.height);
 
-    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.moveTo(sensor.shape.a.x, sensor.shape.a.y);
+    ctx.lineTo(sensor.shape.b.x, sensor.shape.b.y);
+    ctx.lineTo(sensor.shape.c.x, sensor.shape.c.y);
+    ctx.lineTo(sensor.shape.a.x, sensor.shape.a.y);
+    ctx.closePath;
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.font = '16px serif';
-    ctx.fillText(key, sensor.x + 5, sensor.y + 13);
+    ctx.fillText(key, sensor.shape.a.x, sensor.shape.a.y);
 
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.font = '34px serif';
-    ctx.fillText(sensor.reading, sensor.x + sensor.width - 30, sensor.y + sensor.height - 18);
+    ctx.fillText(sensor.reading, sensor.shape.a.x - 10, sensor.shape.a.y - 10);
   });
 }
 
