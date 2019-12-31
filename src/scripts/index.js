@@ -150,6 +150,21 @@ function getPlayerCarSensorsReadings(car, objects) {
 }
 
 /**
+ * Slices a triangle (sensor) in many rectangles.
+ *
+ * Those rectangles are meant to be used for checking the correct level
+ * of readings
+ *
+ * @author mauricio.araldi
+ * @since 0.1.0
+ *
+ * @param {Object} sensor The sensor to be splitted in area levels
+ * @return {Object} The area levels
+ */
+function getSensorAreaLevels(sensor) {
+}
+
+/**
  * Builds the sensors of a car
  *
  * @author mauricio.araldi
@@ -319,7 +334,7 @@ function drawSensors(ctx, sensors) {
     ctx.lineTo(sensor.shape.b.x, sensor.shape.b.y);
     ctx.lineTo(sensor.shape.c.x, sensor.shape.c.y);
     ctx.lineTo(sensor.shape.a.x, sensor.shape.a.y);
-    ctx.closePath;
+    ctx.closePath();
     ctx.fill();
 
     ctx.fillStyle = '#FFFFFF';
