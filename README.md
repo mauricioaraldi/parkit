@@ -9,3 +9,4 @@ No results are guaranteed. Use this software at your own risk.
 
 ## Contributors
 - Mauricio Araldi, [@mauricioaraldi](https://github.com/mauricioaraldi/)
+- Henrique Becker, [@henriquebecker91](https://github.com/henriquebecker91/)
