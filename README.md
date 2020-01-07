@@ -10,3 +10,6 @@ No results are guaranteed. Use this software at your own risk.
 ## Contributors
 - Mauricio Araldi, [@mauricioaraldi](https://github.com/mauricioaraldi/)
 - Henrique Becker, [@henriquebecker91](https://github.com/henriquebecker91/)
+
+## References
+- This project uses SAT-js, an implementation of SAT Algorithm released by Jim Riecken under MIT License that can be found [here](http://jsfiddle.net/ARTsinn/FpEZf/)
