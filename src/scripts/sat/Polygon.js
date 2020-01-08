@@ -20,10 +20,11 @@ import Vector from './Vector';
  *   points are relative to this one)
  * @param {Array.<Vector>=} points An array of vectors representing the points in the polygon,
  *   in clockwise order.
- * @constructor
  */
 export default class Polygon {
   constructor(pos = new Vector(), points = []) {
+    this.edges = [];
+    this.normals = [];
     this.pos = pos;
     this.points = points;
     this.recalc();
@@ -36,19 +37,23 @@ export default class Polygon {
   */
   recalc() {
     const { points } = this;
-    const len = points.length;
+    const { length } = points;
 
     this.edges = [];
     this.normals = [];
 
-    for (let i = 0; i < len; i += 1) {
+    for (let i = 0; i < length; i += 1) {
       const p1 = points[i];
-      const p2 = i < len - 1 ? points[i + 1] : points[0];
-      // const e = new Vector().copy(p2).sub(p1);
-      // const n = new Vector().copy(e).perp().normalize();
-
+      const p2 = i < length - 1 ? points[i + 1] : points[0];
       const e = new Vector();
       const n = new Vector();
+
+      e.copy(p2);
+      e.sub(p1);
+
+      n.copy(e);
+      n.perp();
+      n.normalize();
 
       this.edges.push(e);
       this.normals.push(n);

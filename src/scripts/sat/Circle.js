@@ -18,7 +18,6 @@ import Vector from './Vector';
  *
  * @param {Vector=} pos A vector representing the position of the center of the circle
  * @param {Number} r The radius of the circle
- * @constructor
  */
 export default class Circle {
   constructor(pos = new Vector(), r = 0) {

@@ -16,7 +16,6 @@
  *
  * @param {Number} x The x position.
  * @param {Number} y The y position.
- * @constructor
  */
 export default class Vector {
   constructor(x = 0, y = x) {

@@ -67,28 +67,8 @@ function drawAsphalt(ctx) {
  */
 function drawObjects(ctx, objects) {
   objects.forEach((object) => {
-    // if (object.angle && object.angle !== 0) {
-    //   ctx.save();
-    //   ctx.translate(object.x + object.width / 2, object.y + object.height / 2);
-    //   ctx.rotate(degreesToRadians(object.angle));
-    //   ctx.fillStyle = object.color;
-    //   ctx.fillRect(-(object.width / 2), -(object.height / 2), object.width, object.height);
-
-    //   ctx.restore();
-
-    //   ctx.fillStyle = 'blue';
-    //   ctx.fillRect(object.x, object.y, object.width, object.height);
-
-    //   return;
-    // }
-
-    // ctx.fillStyle = object.color;
-    // ctx.fillRect(object.x, object.y, object.width, object.height);
-
-    // ctx.restore();
-
     const { points } = object.polygon;
-    let i = points.length;
+    let i = points.length - 1;
 
     ctx.fillStyle = object.color;
     ctx.save();
@@ -284,6 +264,7 @@ function updatePlayerCar(car) {
   const speedState = car.brainState.speed;
   const { polygon } = car;
   let { angle, speed } = car;
+  let newAngleDiff = null;
 
   if (car.angle !== angleState) {
     const angleDiff = car.angle > angleState ? angleState - car.angle : car.angle + angleState;
@@ -292,7 +273,11 @@ function updatePlayerCar(car) {
       angle += MAX_ANGLE_CHANGE_PER_TICK;
     } else if (angleDiff < 0) {
       angle -= MAX_ANGLE_CHANGE_PER_TICK;
+    } else {
+      angle += angleDiff;
     }
+
+    newAngleDiff = degreesToRadians(car.angle > angle ? car.angle - angle : angle - car.angle);
   }
 
   if (car.speed !== speedState) {
@@ -302,16 +287,30 @@ function updatePlayerCar(car) {
       speed += MAX_SPEED_CHANGE_PER_TICK;
     } else if (speedDiff < 0) {
       speed -= MAX_SPEED_CHANGE_PER_TICK;
+    } else {
+      speed += speedDiff;
     }
   }
 
   polygon.pos.x -= (speed * Math.cos(degreesToRadians(angle)));
   polygon.pos.y -= (speed * Math.sin(degreesToRadians(angle)));
 
-  polygon.points = polygon.points.map((point) => ({
-    x: point.x * Math.cos(angle) - point.y * Math.sin(angle),
-    y: point.x * Math.sin(angle) + point.y * Math.cos(angle),
-  }));
+  if (newAngleDiff) {
+    polygon.points = polygon.points.map((point) => {
+      const centerX = point.x - car.width / 2;
+      const centerY = point.y - car.height / 2;
+
+      const rotatedX = centerX * Math.cos(newAngleDiff) - centerY * Math.sin(newAngleDiff);
+      const rotatedY = centerX * Math.sin(newAngleDiff) + centerY * Math.cos(newAngleDiff);
+
+      return new Vector(
+        rotatedX + car.width / 2,
+        rotatedY + car.height / 2,
+      )
+    });
+
+    polygon.recalc();
+  }
 
   return {
     ...car,
@@ -427,7 +426,7 @@ function checkCollisions(objects, checkAllCollisions) {
 
     for (let j = i - 1; j >= 0; j -= 1) {
       const objectB = objects[j];
-      const collided = SAT.testPolygonPolygon(objectA.polygon, objectB.polygon, new Response());
+      const collided = SAT.testPolygonPolygon(objectA.polygon, objectB.polygon);
 
       if (collided) {
         collisions.push(objectA, objectB);

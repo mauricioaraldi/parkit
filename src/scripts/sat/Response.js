@@ -19,8 +19,6 @@ import Vector from './Vector';
  * - The vector representing the minimum change necessary to extract the first object
  *   from the second one.
  * - Whether the first object is entirely inside the second, or vice versa.
- *
- * @constructor
  */
 export default class Response {
   constructor() {

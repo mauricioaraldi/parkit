@@ -19,7 +19,6 @@ import Vector from './Vector';
  * @param {Vector} pos A vector representing the top-left of the box.
  * @param {Number} w The width of the box.
  * @param {Number} h The height of the box.
- * @constructor
  */
 export default class Box {
   constructor(pos = new Vector(), w = 0, h = w) {

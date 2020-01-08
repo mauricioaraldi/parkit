@@ -67,7 +67,7 @@ export default class SAT {
   static flattenPointsOn(points, normal, result) {
     let min = Number.MAX_VALUE;
     let max = -Number.MAX_VALUE;
-    let i = points.length;
+    let i = points.length - 1;
     const newResult = Array.from(result);
 
     while (i) {
@@ -112,12 +112,16 @@ export default class SAT {
     let rangeB = this.T_ARRAYS.pop();
 
     // Get the magnitude of the offset between the two polygons
-    const offsetV = this.T_VECTORS.pop().copy(bPos).sub(aPos);
+    const offsetV = this.T_VECTORS.pop();
+
+    offsetV.copy(bPos);
+    offsetV.sub(aPos);
+
     const projectedOffset = offsetV.dot(axis);
 
     // Project the polygons onto the axis.
-    rangeA = this.flattenPointsOn(aPoints, axis, rangeA);
-    rangeB = this.flattenPointsOn(bPoints, axis, rangeB);
+    rangeA = this.constructor.flattenPointsOn(aPoints, axis, rangeA);
+    rangeB = this.constructor.flattenPointsOn(bPoints, axis, rangeB);
 
     // Move B's range to its position relative to A.
     rangeB[0] += projectedOffset;
@@ -147,6 +151,7 @@ export default class SAT {
         } else {
           const option1 = rangeA[1] - rangeB[0];
           const option2 = rangeB[1] - rangeA[0];
+
           overlap = option1 < option2 ? option1 : -option2;
         }
         // B starts further left than A
@@ -160,6 +165,7 @@ export default class SAT {
         } else {
           const option1 = rangeA[1] - rangeB[0];
           const option2 = rangeB[1] - rangeA[0];
+
           overlap = option1 < option2 ? option1 : -option2;
         }
       }
@@ -217,7 +223,11 @@ export default class SAT {
    * @return {boolean} true if the circles intersect, false if they don't.
    */
   testCircleCircle(a, b, response) {
-    const differenceV = this.T_VECTORS.pop().copy(b.pos).sub(a.pos);
+    const differenceV = this.T_VECTORS.pop();
+
+    differenceV.copy(b.pos);
+    differenceV.sub(a.pos);
+
     const totalRadius = a.r + b.r;
     const totalRadiusSq = totalRadius * totalRadius;
     const distanceSq = differenceV.len2();
@@ -237,12 +247,14 @@ export default class SAT {
       response.b = b;
       response.overlap = totalRadius - dist;
       response.overlapN.copy(differenceV.normalize());
-      response.overlapV.copy(differenceV).scale(response.overlap);
+      response.overlapV.copy(differenceV);
+      response.overlapV.scale(response.overlap);
       response.aInB = a.r <= b.r && dist <= b.r - a.r;
       response.bInA = b.r <= a.r && dist <= a.r - b.r;
     }
 
     this.T_VECTORS.push(differenceV);
+
     return true;
   }
 
@@ -256,7 +268,10 @@ export default class SAT {
    * @return {boolean} true if they intersect, false if they don't.
    */
   testPolygonCircle(polygon, circle, response) {
-    const circlePos = this.T_VECTORS.pop().copy(circle.pos).sub(polygon.pos);
+    const circlePos = this.T_VECTORS.pop().copy(circle.pos);
+
+    circlePos.sub(polygon.pos);
+
     const radius = circle.r;
     const radius2 = radius * radius;
     const { points } = polygon;
@@ -292,7 +307,8 @@ export default class SAT {
         edge.copy(polygon.edges[prev]);
 
         // Calculate the center of the circle relative the starting point of the previous edge
-        const point2 = this.T_VECTORS.pop().copy(circlePos).sub(points[prev]);
+        const point2 = this.T_VECTORS.pop().copy(circlePos);
+        point2.sub(points[prev]);
 
         region = this.vornoiRegion(edge, point2);
 
@@ -391,7 +407,8 @@ export default class SAT {
     if (response) {
       response.a = polygon;
       response.b = circle;
-      response.overlapV.copy(response.overlapN).scale(response.overlap);
+      response.overlapV.copy(response.overlapN);
+      response.overlapV.scale(response.overlap);
     }
 
     this.T_VECTORS.push(circlePos);
@@ -443,8 +460,8 @@ export default class SAT {
   testPolygonPolygon(a, b, response) {
     const aPoints = a.points;
     const bPoints = b.points;
-    let aLen = aPoints.length;
-    let bLen = bPoints.length;
+    let aLen = aPoints.length - 1;
+    let bLen = bPoints.length - 1;
 
     // If any of the edge normals of A is a separating axis, no intersection.
     while (aLen) {
@@ -488,7 +505,8 @@ export default class SAT {
     if (response) {
       response.a = a;
       response.b = b;
-      response.overlapV.copy(response.overlapN).scale(response.overlap);
+      response.overlapV.copy(response.overlapN);
+      response.overlapV.scale(response.overlap);
     }
 
     return true;
