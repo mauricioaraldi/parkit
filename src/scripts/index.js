@@ -19,8 +19,10 @@ const BRAIN_TICKS_PER_SECOND = 10;
 const PIXELS_PER_METER = 10;
 const SENSOR_METERS_RANGE = 8;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
-const MAX_ANGLE_CHANGE_PER_TICK = 1;
-const MAX_SPEED_CHANGE_PER_TICK = 1;
+const MAX_ANGLE_CHANGE_PER_TICK = 2;
+const MAX_SPEED_CHANGE_PER_TICK = 3;
+const MAX_ANGLE = 35;
+const SPEED_RATIO = 5;
 
 let codeMirror;
 let animationTicker;
@@ -265,35 +267,44 @@ function updatePlayerCar(car) {
   const { polygon } = car;
   let { angle, speed } = car;
   let newAngleDiff = null;
-
-  if (car.angle !== angleState) {
-    const angleDiff = car.angle > angleState ? angleState - car.angle : car.angle + angleState;
-
-    if (angleDiff > 0) {
-      angle += MAX_ANGLE_CHANGE_PER_TICK;
-    } else if (angleDiff < 0) {
-      angle -= MAX_ANGLE_CHANGE_PER_TICK;
-    } else {
-      angle += angleDiff;
-    }
-
-    newAngleDiff = degreesToRadians(car.angle > angle ? car.angle - angle : angle - car.angle);
-  }
+  let realSpeed = null;
 
   if (car.speed !== speedState) {
-    const speedDiff = car.speed > speedState ? speedState - car.speed : car.speed + speedState;
+    const speedDiff = speedState - car.speed;
+    let speedChange = null;
 
     if (speedDiff > 0) {
-      speed += MAX_SPEED_CHANGE_PER_TICK;
+      speedChange = Math.min(speedDiff, MAX_SPEED_CHANGE_PER_TICK);
     } else if (speedDiff < 0) {
-      speed -= MAX_SPEED_CHANGE_PER_TICK;
-    } else {
-      speed += speedDiff;
+      speedChange = Math.max(speedDiff, -MAX_SPEED_CHANGE_PER_TICK);
     }
+
+    speed += speedChange;
   }
 
-  polygon.pos.x -= (speed * Math.cos(degreesToRadians(angle)));
-  polygon.pos.y -= (speed * Math.sin(degreesToRadians(angle)));
+  if (speed > 0) {
+    realSpeed = Math.ceil(speed / SPEED_RATIO);
+  } else {
+    realSpeed = Math.floor(speed / SPEED_RATIO);
+  }
+
+  if (realSpeed && car.angle !== angleState) {
+    const angleDiff = angleState - car.angle;
+    let angleChange = null;
+
+    if (angleDiff > 0) {
+      angleChange = Math.min(angleDiff, MAX_ANGLE_CHANGE_PER_TICK);
+    } else if (angleDiff < 0) {
+      angleChange = Math.max(angleDiff, -MAX_ANGLE_CHANGE_PER_TICK);
+    }
+
+    angle += angleChange;
+
+    newAngleDiff = degreesToRadians(angleState - car.angle);
+  }
+
+  polygon.pos.x -= (realSpeed * Math.cos(degreesToRadians(angle)));
+  polygon.pos.y -= (realSpeed * Math.sin(degreesToRadians(angle)));
 
   if (newAngleDiff) {
     polygon.points = polygon.points.map((point) => {
@@ -306,7 +317,7 @@ function updatePlayerCar(car) {
       return new Vector(
         rotatedX + car.width / 2,
         rotatedY + car.height / 2,
-      )
+      );
     });
 
     polygon.recalc();
@@ -495,6 +506,8 @@ function brainTick(playerCar, sceneObjects) {
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
 
   newBrainState = { ...playerCar.brainState, ...carInstructions };
+
+  newBrainState.angle = Math.min(newBrainState.angle, MAX_ANGLE);
   // newBrainState.sensors = sensors;
 
   return newBrainState;
