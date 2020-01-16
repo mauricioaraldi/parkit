@@ -20,9 +20,9 @@ const PIXELS_PER_METER = 10;
 const SENSOR_METERS_RANGE = 8;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
 const MAX_ANGLE_CHANGE_PER_TICK = 2;
-const MAX_SPEED_CHANGE_PER_TICK = 3;
+const MAX_SPEED_CHANGE_PER_TICK = 0.6;
 const MAX_ANGLE = 35;
-const SPEED_RATIO = 5;
+const SPEED_RATIO = 60;
 
 let codeMirror;
 let animationTicker;
@@ -282,11 +282,7 @@ function updatePlayerCar(car) {
     speed += speedChange;
   }
 
-  if (speed > 0) {
-    realSpeed = Math.ceil(speed / SPEED_RATIO);
-  } else {
-    realSpeed = Math.floor(speed / SPEED_RATIO);
-  }
+  realSpeed = speed * (speed / SPEED_RATIO);
 
   if (realSpeed && car.angle !== angleState) {
     const angleDiff = angleState - car.angle;
