@@ -1,9 +1,6 @@
 import CodeMirror from 'codemirror/lib/codemirror';
 import 'codemirror/mode/javascript/javascript';
-import Polygon from './sat/Polygon';
-import Response from './sat/Response';
-import Sat from './sat/Sat';
-import Vector from './sat/Vector';
+import SAT from 'sat';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
@@ -18,6 +15,7 @@ const FRAMES_PER_SECOND = 24;
 const BRAIN_TICKS_PER_SECOND = 10;
 const PIXELS_PER_METER = 10;
 const SENSOR_METERS_RANGE = 8;
+const SENSOR_BREAKPOINTS_QT = 10;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
 const MAX_ANGLE_CHANGE_PER_TICK = 2;
 const MAX_SPEED_CHANGE_PER_TICK = 0.6;
@@ -27,8 +25,6 @@ const SPEED_RATIO = 60;
 let codeMirror;
 let animationTicker;
 let brainTicker;
-
-const SAT = new Sat();
 
 /**
  * Converts degrees into radians, to use in canvas
@@ -119,13 +115,13 @@ function buildParkedCars(availableSlotIndex) {
 
     return {
       color,
-      polygon: new Polygon(
-        new Vector(x, y),
+      polygon: new SAT.Polygon(
+        new SAT.Vector(x, y),
         [
-          new Vector(0, 0),
-          new Vector(CAR_WIDTH, 0),
-          new Vector(CAR_WIDTH, CAR_HEIGHT),
-          new Vector(0, CAR_HEIGHT),
+          new SAT.Vector(0, 0),
+          new SAT.Vector(CAR_WIDTH, 0),
+          new SAT.Vector(CAR_WIDTH, CAR_HEIGHT),
+          new SAT.Vector(0, CAR_HEIGHT),
         ],
       ),
       width: CAR_WIDTH,
@@ -143,17 +139,19 @@ function buildParkedCars(availableSlotIndex) {
  * @param {Number} originX The X point from where the sensor will be drawn
  * @param {Number} originY The Y point from where the sensor will be drawn
  * @param {Number} angle The angle to which the sensor will be drawn towards
- * @param {Number} length For how many pixels the sensor area extends
+ * @param {Number} length How many pixels the sensor area needs to cover
  * @return {Object} The area of the sensor ({x, y}[])
  */
 function getSensorArea(originX, originY, angle, length) {
+  const interval = length / SENSOR_BREAKPOINTS_QT;
   const area = [];
 
-  for (let i = 0; i < length; i += 1) {
-    area.push({
-      x: Math.floor(originX - (i * Math.cos(degreesToRadians(angle)))),
-      y: Math.floor(originY - (i * Math.sin(degreesToRadians(angle)))),
-    });
+  for (let i = 0; i < SENSOR_BREAKPOINTS_QT; i++) {
+    const offset = i * interval;
+    area.push(new SAT.Vector(
+      Math.floor(originX - (offset * Math.cos(degreesToRadians(angle)))),
+      Math.floor(originY - (offset * Math.sin(degreesToRadians(angle)))),
+    ));
   }
 
   return area;
@@ -169,19 +167,12 @@ function getSensorArea(originX, originY, angle, length) {
  * @return {Object} The sensors of the car (area and reading, by id)
  */
 function buildSensors(car) {
-  const points = [
-    // Top Left (A)
-    { x: car.x, y: car.y },
-
-    // Top Right (B)
-    { x: car.x + car.width, y: car.y },
-
-    // Bottom Right (C)
-    { x: car.x + car.width, y: car.y + car.height },
-
-    // Bottom Left (D)
-    { x: car.x, y: car.y + car.height },
-  ];
+  const carX = car.polygon.pos.x;
+  const carY = car.polygon.pos.y;
+  const carPoints = car.polygon.points;
+  const points = carPoints.map((carPoint) => (
+    { x: carX + carPoint.x, y: carY + carPoint.y }
+  ));
   const angles = [
     // Top Left
     -45, 0, 45, 90, 135,
@@ -196,17 +187,21 @@ function buildSensors(car) {
     -135, -90, -45, 0, 45,
   ];
   const sensors = {};
+  const pointsPerAngle = angles.length / points.length;
+  const carAngleCos = Math.cos(degreesToRadians(car.angle));
+  const carAngleDelta = car.angle * carAngleCos;
 
-  for (let i = 0; i < 20; i += 1) {
-    const point = points[Math.floor((i || 1) / 5)];
+  for (let i = 0; i < angles.length; i += 1) {
+    const point = points[Math.floor((i || 1) / pointsPerAngle)];
+    const area = getSensorArea(
+      point.x,
+      point.y,
+      angles[i] + car.angle,
+      SENSOR_RANGE,
+    );
 
     sensors[i] = {
-      area: getSensorArea(
-        point.x - (car.angle * Math.cos(degreesToRadians(car.angle))),
-        point.y - (car.angle * Math.cos(degreesToRadians(car.angle))),
-        angles[i] + car.angle,
-        SENSOR_RANGE,
-      ),
+      area,
       reading: 0,
     };
   }
@@ -237,13 +232,13 @@ function buildPlayerCar() {
     sensors: null,
     speed: 0,
     width: CAR_WIDTH,
-    polygon: new Polygon(
-      new Vector(x, y),
+    polygon: new SAT.Polygon(
+      new SAT.Vector(x, y),
       [
-        new Vector(0, 0),
-        new Vector(CAR_WIDTH, 0),
-        new Vector(CAR_WIDTH, CAR_HEIGHT),
-        new Vector(0, CAR_HEIGHT),
+        new SAT.Vector(0, 0),
+        new SAT.Vector(CAR_WIDTH, 0),
+        new SAT.Vector(CAR_WIDTH, CAR_HEIGHT),
+        new SAT.Vector(0, CAR_HEIGHT),
       ],
     ),
   };
@@ -296,27 +291,27 @@ function updatePlayerCar(car) {
 
     angle += angleChange;
 
-    newAngleDiff = degreesToRadians(angleState - car.angle);
+    newAngleDiff = degreesToRadians(angle - car.angle);
   }
 
   polygon.pos.x -= (realSpeed * Math.cos(degreesToRadians(angle)));
   polygon.pos.y -= (realSpeed * Math.sin(degreesToRadians(angle)));
 
   if (newAngleDiff) {
-    polygon.points = polygon.points.map((point) => {
+    const points = polygon.points.map((point) => {
       const centerX = point.x - car.width / 2;
       const centerY = point.y - car.height / 2;
 
       const rotatedX = centerX * Math.cos(newAngleDiff) - centerY * Math.sin(newAngleDiff);
       const rotatedY = centerX * Math.sin(newAngleDiff) + centerY * Math.cos(newAngleDiff);
 
-      return new Vector(
+      return new SAT.Vector(
         rotatedX + car.width / 2,
         rotatedY + car.height / 2,
       );
     });
 
-    polygon.recalc();
+    polygon.setPoints(points);
   }
 
   return {
@@ -343,17 +338,15 @@ function getSensorsReadings(referenceSensors, objects) {
   Object.keys(sensors).forEach((key) => {
     const sensor = sensors[key];
 
-    sensor.reading = 0;
+    sensor.reading = SENSOR_BREAKPOINTS_QT;
 
     objects.forEach((object) => {
-    //   if (
-    //     sensor.collisionBox.x < object.x + object.width
-    //     && sensor.collisionBox.x + sensor.collisionBox.width > object.x
-    //     && sensor.collisionBox.y < object.y + object.height
-    //     && sensor.collisionBox.height + sensor.collisionBox.y > object.y
-    //   ) {
-    //     sensor.reading = 1;
-    //   }
+      sensor.area.some((point, index) => {
+        if (SAT.pointInPolygon(point, object.polygon)) {
+          sensor.reading = index;
+          return true;
+        }
+      });
     });
   });
 
@@ -370,7 +363,7 @@ function getSensorsReadings(referenceSensors, objects) {
  */
 function updateSensorsDisplay(sensors) {
   Object.keys(sensors).forEach((key) => {
-    document.querySelector(`#sensor${key}`).value = sensors[key].reading;
+    document.querySelector(`#sensor${parseInt(key) + 1}`).value = sensors[key].reading;
   });
 }
 
@@ -496,15 +489,15 @@ function brainTick(playerCar, sceneObjects) {
   const carInstructions = { sensors: playerCar.sensors };
   let newBrainState = null;
 
-  // sensors = getSensorsReadings(sensors, [...sceneObjects]);
-  // updateSensorsDisplay(sensors);
+  let sensors = getSensorsReadings(playerCar.sensors, [...sceneObjects]);
+  updateSensorsDisplay(sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
 
   newBrainState = { ...playerCar.brainState, ...carInstructions };
 
   newBrainState.angle = Math.min(newBrainState.angle, MAX_ANGLE);
-  // newBrainState.sensors = sensors;
+  newBrainState.sensors = sensors;
 
   return newBrainState;
 }
@@ -590,7 +583,7 @@ function loadCode() {
 }
 
 
-/** Initial setup */
+/* Initial setup */
 window.onload = () => {
   const canvas = document.querySelector('canvas');
 
@@ -611,7 +604,7 @@ window.onload = () => {
 };
 
 
-/** Actions */
+/* Actions */
 document.querySelector('#play').addEventListener('click', () => runSimulation(true));
 document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
 document.querySelector('#save').addEventListener('click', () => saveCode());
