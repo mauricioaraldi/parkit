@@ -1,6 +1,9 @@
 import CodeMirror from 'codemirror/lib/codemirror';
 import 'codemirror/mode/javascript/javascript';
 import SAT from 'sat';
+import 'noty/lib/noty.css';
+import 'noty/lib/themes/metroui.css';
+import Noty from 'noty';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
@@ -17,7 +20,7 @@ const PIXELS_PER_METER = 10;
 const SENSOR_METERS_RANGE = 8;
 const SENSOR_BREAKPOINTS_QT = 10;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
-const MAX_ANGLE_CHANGE_PER_TICK = 2;
+const MAX_ANGLE_CHANGE_PER_TICK = 0.6;
 const MAX_SPEED_CHANGE_PER_TICK = 0.6;
 const MAX_ANGLE = 35;
 const SPEED_RATIO = 60;
@@ -25,6 +28,11 @@ const SPEED_RATIO = 60;
 let codeMirror;
 let animationTicker;
 let brainTicker;
+
+Noty.overrideDefaults({
+  layout: 'center',
+  theme: 'metroui',
+});
 
 /**
  * Converts degrees into radians, to use in canvas
@@ -146,7 +154,7 @@ function getSensorArea(originX, originY, angle, length) {
   const interval = length / SENSOR_BREAKPOINTS_QT;
   const area = [];
 
-  for (let i = 0; i < SENSOR_BREAKPOINTS_QT; i++) {
+  for (let i = 0; i < SENSOR_BREAKPOINTS_QT; i += 1) {
     const offset = i * interval;
     area.push(new SAT.Vector(
       Math.floor(originX - (offset * Math.cos(degreesToRadians(angle)))),
@@ -188,8 +196,6 @@ function buildSensors(car) {
   ];
   const sensors = {};
   const pointsPerAngle = angles.length / points.length;
-  const carAngleCos = Math.cos(degreesToRadians(car.angle));
-  const carAngleDelta = car.angle * carAngleCos;
 
   for (let i = 0; i < angles.length; i += 1) {
     const point = points[Math.floor((i || 1) / pointsPerAngle)];
@@ -291,7 +297,7 @@ function updatePlayerCar(car) {
 
     angle += angleChange;
 
-    newAngleDiff = degreesToRadians(angle - car.angle);
+    newAngleDiff = degreesToRadians(angleChange);
   }
 
   polygon.pos.x -= (realSpeed * Math.cos(degreesToRadians(angle)));
@@ -346,6 +352,8 @@ function getSensorsReadings(referenceSensors, objects) {
           sensor.reading = index;
           return true;
         }
+
+        return false;
       });
     });
   });
@@ -354,7 +362,7 @@ function getSensorsReadings(referenceSensors, objects) {
 }
 
 /**
- * Updates the sensors readings
+ * Updates the interface display of sensors
  *
  * @author mauricio.araldi
  * @since 0.1.0
@@ -363,7 +371,8 @@ function getSensorsReadings(referenceSensors, objects) {
  */
 function updateSensorsDisplay(sensors) {
   Object.keys(sensors).forEach((key) => {
-    document.querySelector(`#sensor${parseInt(key) + 1}`).value = sensors[key].reading;
+    const sensor = document.querySelector(`#sensor${parseInt(key, 10) + 1}`);
+    sensor.value = sensors[key].reading;
   });
 }
 
@@ -430,6 +439,10 @@ function checkCollisions(objects, checkAllCollisions) {
 
       if (collided) {
         collisions.push(objectA, objectB);
+
+        if (!checkAllCollisions) {
+          return collisions;
+        }
       }
     }
   }
@@ -438,7 +451,7 @@ function checkCollisions(objects, checkAllCollisions) {
 }
 
 /**
- * Updats the animation
+ * Updates the animation
  *
  * @author mauricio.araldi
  * @since 0.1.0
@@ -468,7 +481,11 @@ function animationTick(ctx, playerCar, sceneObjects) {
   collisions = checkCollisions([...sceneObjects, playerCar]);
 
   if (collisions.length) {
-    console.log(collisions);
+    runSimulation(false);
+    new Noty({
+      text: 'Your car crashed!',
+      type: 'error',
+    }).show();
   }
 
   return newPlayerCarState;
@@ -489,7 +506,7 @@ function brainTick(playerCar, sceneObjects) {
   const carInstructions = { sensors: playerCar.sensors };
   let newBrainState = null;
 
-  let sensors = getSensorsReadings(playerCar.sensors, [...sceneObjects]);
+  const sensors = getSensorsReadings(playerCar.sensors, [...sceneObjects]);
   updateSensorsDisplay(sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
@@ -561,7 +578,6 @@ function saveCode() {
   return true;
 }
 
-
 /**
  * Loads user's code from localStorage
  *
@@ -582,7 +598,6 @@ function loadCode() {
   return true;
 }
 
-
 /* Initial setup */
 window.onload = () => {
   const canvas = document.querySelector('canvas');
@@ -590,19 +605,36 @@ window.onload = () => {
   canvas.width = CANVAS_WIDTH;
   canvas.height = CANVAS_HEIGHT;
 
-  codeMirror = CodeMirror.fromTextArea(document.querySelector('#code-editor'), {
-    lineNumbers: true,
-    mode: 'javascript',
-    theme: 'paraiso-dark',
-  });
+  codeMirror = CodeMirror.fromTextArea(
+    document.querySelector('#code-editor'),
+    {
+      lineNumbers: true,
+      mode: 'javascript',
+      theme: 'paraiso-dark',
+    },
+  );
+
+  const codeMirrorElement = document.querySelector('.CodeMirror');
+  const codeMirrorTop = codeMirrorElement.getClientRects()[0].top;
+  const codeMirrorHeight = window.innerHeight - codeMirrorTop;
+  codeMirrorElement.style.height = `${codeMirrorHeight}px`;
 
   if (!loadCode()) {
-    codeMirror.getDoc().setValue('function carBrain(car) {\n  car.speed = 10;\n}');
+    codeMirror.getDoc().setValue(`function carBrain(car) {
+  car.speed = 20;
+
+  if (car.sensors[4].reading === 10) {
+    car.speed = 0;
+  } else if (car.sensors[4].reading >= 8) {
+    car.angle = 5;
+  } else if (car.sensors[4].reading <= 2) {
+    car.angle = -5;
+  }
+}`);
   }
 
   runSimulation(false);
 };
-
 
 /* Actions */
 document.querySelector('#play').addEventListener('click', () => runSimulation(true));

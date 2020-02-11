@@ -1,8 +1,24 @@
 body {
+  font-family: 'Open Sans';
   margin: 0;
   padding: 0;
 }
 
+h1, h3 {
+  margin: 8px 0;
+  padding: 0;
+  text-align: center;
+}
+
+#sensors {
+  text-align: center;
+}
+
 input {
 	width: 30px;
+}
+
+#controls {
+  margin: 8px 0;
+  text-align: center;
 }

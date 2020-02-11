@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "codemirror": "^5.50.0",
+    "noty": "^3.2.0-beta",
     "sat": "^0.8.0"
   }
 }
