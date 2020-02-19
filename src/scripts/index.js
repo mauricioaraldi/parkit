@@ -5,12 +5,15 @@ import 'noty/lib/noty.css';
 import 'noty/lib/themes/metroui.css';
 import Noty from 'noty';
 
+import Car from './objects/Car';
+import Utils from './utils';
+
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/paraiso-dark.css';
 
 const LS_CODE_KEY = 'parkit_usercode';
-const CANVAS_WIDTH = window.innerWidth;
+const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 300;
 const CAR_WIDTH = 200;
 const CAR_HEIGHT = 100;
@@ -18,12 +21,67 @@ const FRAMES_PER_SECOND = 24;
 const BRAIN_TICKS_PER_SECOND = 10;
 const PIXELS_PER_METER = 10;
 const SENSOR_METERS_RANGE = 8;
-const SENSOR_BREAKPOINTS_QT = 10;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
 const MAX_ANGLE_CHANGE_PER_TICK = 0.6;
 const MAX_SPEED_CHANGE_PER_TICK = 0.6;
 const MAX_ANGLE = 35;
 const SPEED_RATIO = 60;
+const SENSORS_QT = 20;
+const SENSOR_BREAKPOINTS_QT = 10;
+const OBJECT_COLORS = ['#9CC0E7', '#EEEEEE', '#FCFCFC', '#FAEACB', '#F7DBD7',
+  '#CBBFB0', '#BDC2C2', '#739194', '88BCE8'];
+const CURRENT_LEVEL = 1;
+
+const LEVELS_CONFIG = {
+  1: {
+    getObstacles: () => [
+      new Car(
+        OBJECT_COLORS[0],
+        10,
+        10,
+        CAR_WIDTH,
+        CAR_HEIGHT,
+      ),
+      new Car(
+        OBJECT_COLORS[1],
+        (CAR_WIDTH * 2) + (64 * 2),
+        10,
+        CAR_WIDTH,
+        CAR_HEIGHT,
+      ),
+      new Car(
+        OBJECT_COLORS[2],
+        (CAR_WIDTH * 3) + (64 * 3),
+        10,
+        CAR_WIDTH,
+        CAR_HEIGHT,
+      ),
+      new Car(
+        OBJECT_COLORS[3],
+        (CAR_WIDTH * 4) + (64 * 4),
+        10,
+        CAR_WIDTH,
+        CAR_HEIGHT,
+      ),
+    ],
+    getPlayerCar: () => new Car(
+      '#DB2929',
+      CANVAS_WIDTH - (CAR_WIDTH + 10),
+      CAR_HEIGHT + 60,
+      CAR_WIDTH,
+      CAR_HEIGHT,
+      0,
+      {
+        angle: 0,
+        speed: 0,
+      },
+      0,
+      true,
+      SENSOR_RANGE,
+      SENSOR_BREAKPOINTS_QT,
+    ),
+  },
+};
 
 let codeMirror;
 let animationTicker;
@@ -32,20 +90,8 @@ let brainTicker;
 Noty.overrideDefaults({
   layout: 'center',
   theme: 'metroui',
+  timeout: 3000,
 });
-
-/**
- * Converts degrees into radians, to use in canvas
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Number} degrees Degrees to be converted to radians
- * @return {Number} Radians obtained from the degrees
- */
-function degreesToRadians(degrees) {
-  return degrees * (Math.PI / 180);
-}
 
 /**
  * Draws the asphalt on a canvas
@@ -96,165 +142,6 @@ function drawObjects(ctx, objects) {
 }
 
 /**
- * Build the cars that will be displayed as parked
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Number} availableSlotIndex The parking slot that will be available
- * @return {Array<Object>} The built parked cars
- */
-function buildParkedCars(availableSlotIndex) {
-  let carColors = ['#9CC0E7', '#EEEEEE', '#FCFCFC', '#FAEACB', '#F7DBD7',
-    '#CBBFB0', '#BDC2C2', '#739194', '88BCE8'];
-
-  if (availableSlotIndex !== undefined) {
-    carColors = carColors.slice(0, availableSlotIndex)
-      .concat([null, ...carColors.slice(availableSlotIndex)]);
-  }
-
-  return carColors.map((color, index) => {
-    if (!color) {
-      return null;
-    }
-
-    const x = 10 + (10 * index) + (CAR_WIDTH * index);
-    const y = 10;
-
-    return {
-      color,
-      polygon: new SAT.Polygon(
-        new SAT.Vector(x, y),
-        [
-          new SAT.Vector(0, 0),
-          new SAT.Vector(CAR_WIDTH, 0),
-          new SAT.Vector(CAR_WIDTH, CAR_HEIGHT),
-          new SAT.Vector(0, CAR_HEIGHT),
-        ],
-      ),
-      width: CAR_WIDTH,
-      height: CAR_HEIGHT,
-    };
-  }).filter((car) => car);
-}
-
-/**
- * Gets the area of a sensor, acording to the car position
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Number} originX The X point from where the sensor will be drawn
- * @param {Number} originY The Y point from where the sensor will be drawn
- * @param {Number} angle The angle to which the sensor will be drawn towards
- * @param {Number} length How many pixels the sensor area needs to cover
- * @return {Object} The area of the sensor ({x, y}[])
- */
-function getSensorArea(originX, originY, angle, length) {
-  const interval = length / SENSOR_BREAKPOINTS_QT;
-  const area = [];
-
-  for (let i = 0; i < SENSOR_BREAKPOINTS_QT; i += 1) {
-    const offset = i * interval;
-    area.push(new SAT.Vector(
-      Math.floor(originX - (offset * Math.cos(degreesToRadians(angle)))),
-      Math.floor(originY - (offset * Math.sin(degreesToRadians(angle)))),
-    ));
-  }
-
-  return area;
-}
-
-/**
- * Builds the sensors of a car
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Object} car The car to have its sensors built
- * @return {Object} The sensors of the car (area and reading, by id)
- */
-function buildSensors(car) {
-  const carX = car.polygon.pos.x;
-  const carY = car.polygon.pos.y;
-  const carPoints = car.polygon.points;
-  const points = carPoints.map((carPoint) => (
-    { x: carX + carPoint.x, y: carY + carPoint.y }
-  ));
-  const angles = [
-    // Top Left
-    -45, 0, 45, 90, 135,
-
-    // Top Right
-    45, 90, 135, 180, 225,
-
-    // Bottom Right
-    135, 180, 225, 270, 315,
-
-    // Bottom Left
-    -135, -90, -45, 0, 45,
-  ];
-  const sensors = {};
-  const pointsPerAngle = angles.length / points.length;
-
-  for (let i = 0; i < angles.length; i += 1) {
-    const point = points[Math.floor((i || 1) / pointsPerAngle)];
-    const area = getSensorArea(
-      point.x,
-      point.y,
-      angles[i] + car.angle,
-      SENSOR_RANGE,
-    );
-
-    sensors[i] = {
-      area,
-      reading: 0,
-    };
-  }
-
-  return sensors;
-}
-
-/**
- * Builds the players car
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @return {Object} The built player car
- */
-function buildPlayerCar() {
-  const x = CANVAS_WIDTH - (CAR_WIDTH + 10);
-  const y = CAR_HEIGHT + 60;
-  const car = {
-    angle: 0,
-    brainState: {
-      angle: 0,
-      speed: 0,
-    },
-    color: '#DB2929',
-    height: CAR_HEIGHT,
-    sensorRange: SENSOR_RANGE,
-    sensors: null,
-    speed: 0,
-    width: CAR_WIDTH,
-    polygon: new SAT.Polygon(
-      new SAT.Vector(x, y),
-      [
-        new SAT.Vector(0, 0),
-        new SAT.Vector(CAR_WIDTH, 0),
-        new SAT.Vector(CAR_WIDTH, CAR_HEIGHT),
-        new SAT.Vector(0, CAR_HEIGHT),
-      ],
-    ),
-  };
-
-  car.sensors = buildSensors(car);
-
-  return car;
-}
-
-/**
  * Updates the player's car with new information
  *
  * @author mauricio.araldi
@@ -285,6 +172,8 @@ function updatePlayerCar(car) {
 
   realSpeed = speed * (speed / SPEED_RATIO);
 
+  car.speed = speed;
+
   if (realSpeed && car.angle !== angleState) {
     const angleDiff = angleState - car.angle;
     let angleChange = null;
@@ -297,11 +186,13 @@ function updatePlayerCar(car) {
 
     angle += angleChange;
 
-    newAngleDiff = degreesToRadians(angleChange);
+    newAngleDiff = Utils.degreesToRadians(angleChange);
   }
 
-  polygon.pos.x -= (realSpeed * Math.cos(degreesToRadians(angle)));
-  polygon.pos.y -= (realSpeed * Math.sin(degreesToRadians(angle)));
+  car.angle = angle;
+
+  car.polygon.pos.x -= (realSpeed * Math.cos(Utils.degreesToRadians(angle)));
+  car.polygon.pos.y -= (realSpeed * Math.sin(Utils.degreesToRadians(angle)));
 
   if (newAngleDiff) {
     const points = polygon.points.map((point) => {
@@ -317,15 +208,8 @@ function updatePlayerCar(car) {
       );
     });
 
-    polygon.setPoints(points);
+    car.polygon.setPoints(points);
   }
-
-  return {
-    ...car,
-    angle,
-    polygon,
-    speed,
-  };
 }
 
 /**
@@ -344,7 +228,7 @@ function getSensorsReadings(referenceSensors, objects) {
   Object.keys(sensors).forEach((key) => {
     const sensor = sensors[key];
 
-    sensor.reading = SENSOR_BREAKPOINTS_QT;
+    sensor.reading = sensor.area.length;
 
     objects.forEach((object) => {
       sensor.area.some((point, index) => {
@@ -371,7 +255,7 @@ function getSensorsReadings(referenceSensors, objects) {
  */
 function updateSensorsDisplay(sensors) {
   Object.keys(sensors).forEach((key) => {
-    const sensor = document.querySelector(`#sensor${parseInt(key, 10) + 1}`);
+    const sensor = document.querySelector(`#sensor${key}`);
     sensor.value = sensors[key].reading;
   });
 }
@@ -383,15 +267,16 @@ function updateSensorsDisplay(sensors) {
  * @since 0.1.0
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
+ * @param {Integer[]} sensorIds IDs of the sensors to be drawn
  * @param {Object} car The car with the sensors to be drawn
  * @return {Boolean} If the sensors were drew
  */
-function drawSensors(ctx, car) {
+function drawSensors(ctx, sensorIds, car) {
   ctx.strokeStyle = '#FFFFFF';
   ctx.lineWidth = 2;
 
-  Object.keys(car.sensors).forEach((key) => {
-    const { area } = car.sensors[key];
+  sensorIds.forEach((id) => {
+    const { area } = car.sensors[id];
 
     ctx.beginPath();
     ctx.moveTo(area[0].x, area[0].y);
@@ -462,20 +347,24 @@ function checkCollisions(objects, checkAllCollisions) {
  * @return {Object} The new state of the player's car
  */
 function animationTick(ctx, playerCar, sceneObjects) {
-  const highlightSensors = true;
-  let newPlayerCarState = null;
+  const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   drawAsphalt(ctx);
   drawObjects(ctx, [...sceneObjects, playerCar]);
-  newPlayerCarState = updatePlayerCar(playerCar);
 
-  newPlayerCarState.sensors = buildSensors(newPlayerCarState);
+  updatePlayerCar(playerCar);
 
-  if (highlightSensors) {
-    drawSensors(ctx, playerCar);
+  playerCar.sensors = playerCar.buildSensors();
+
+  if (highlightSensors.length) {
+    const ids = [];
+
+    highlightSensors.forEach((sensor) => ids.push(parseInt(sensor.dataset.id, 10)));
+
+    drawSensors(ctx, ids, playerCar);
   }
 
   collisions = checkCollisions([...sceneObjects, playerCar]);
@@ -487,8 +376,6 @@ function animationTick(ctx, playerCar, sceneObjects) {
       type: 'error',
     }).show();
   }
-
-  return newPlayerCarState;
 }
 
 /**
@@ -528,15 +415,16 @@ function brainTick(playerCar, sceneObjects) {
  * @param {Boolean} play If the simulation should be played
  */
 function runSimulation(play) {
+  const currentLevel = LEVELS_CONFIG[CURRENT_LEVEL];
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
-  const sceneObjects = buildParkedCars(2);
-  let playerCar = buildPlayerCar();
+  const sceneObjects = currentLevel.getObstacles();
+  const playerCar = currentLevel.getPlayerCar();
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
       () => {
-        playerCar = animationTick(ctx, playerCar, sceneObjects);
+        animationTick(ctx, playerCar, sceneObjects);
       },
       1000 / FRAMES_PER_SECOND,
     );
@@ -598,12 +486,140 @@ function loadCode() {
   return true;
 }
 
+/**
+ * Checks if all sensors are highlighted and if the checkbox should
+ * be checked
+ *
+ * @author mauricio.araldi
+ * @since 0.2.0
+ */
+function checkSensorsHighlighted() {
+  const sections = document.querySelectorAll('.sensor-section');
+  const activeSensors = document.querySelectorAll('.sensor.active');
+  const sensorsQtPerSection = SENSORS_QT / sections.length;
+  const highlightAllCheckbox = document.querySelector('#highlight-all-sensors');
+
+  sections.forEach((section) => {
+    const sectionActiveSensors = section.querySelectorAll('.sensor.active');
+    const input = section.querySelector('input');
+
+    input.checked = sectionActiveSensors.length === sensorsQtPerSection;
+  });
+
+  highlightAllCheckbox.checked = activeSensors.length === SENSORS_QT;
+}
+
+/**
+ * Creates the input field for the sensors
+ *
+ * @author mauricio.araldi
+ * @since 0.2.0
+ *
+ * @param {Number} sensorsQt The quantity of sensors
+ */
+function createSensorInputs(sensorsQt) {
+  const sectionContainers = [
+    document.querySelector('#front-right-section > div'),
+    document.querySelector('#rear-right-section > div'),
+    document.querySelector('#rear-left-section > div'),
+    document.querySelector('#front-left-section > div'),
+  ];
+
+  for (let i = 1; i <= sensorsQt; i += 1) {
+    const sensorContainer = document.createElement('div');
+    const sensorTitle = document.createElement('span');
+    const sensorInput = document.createElement('input');
+    let sectionContainer = sectionContainers[Math.floor((i - 1) / 5)];
+
+    sensorTitle.textContent = i;
+
+    sensorInput.setAttribute('readonly', true);
+    sensorInput.setAttribute('type', 'text');
+    sensorInput.setAttribute('id', `sensor${i}`);
+
+    sensorContainer.classList.add('sensor');
+    sensorContainer.setAttribute('data-id', i);
+    sensorContainer.append(sensorTitle);
+    sensorContainer.append(sensorInput);
+
+    sensorContainer.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+
+      const isActive = sensorContainer.dataset.active;
+
+      setHighlightSensor(sensorContainer, !isActive);
+    });
+
+    if (!sectionContainer) {
+      sectionContainer = sectionContainers[sectionContainers.length - 1];
+    }
+
+    sectionContainer.append(sensorContainer);
+  }
+}
+
+/**
+ * Toggles the highlight in one sensor
+ *
+ * @author mauricio.araldi
+ * @since 0.2.0
+ *
+ * @param {HTMLInputElement} sensor The sensor to highlight
+ * @param {Boolean} active If the sensor should be marked as active
+ */
+function setHighlightSensor(sensor, active) {
+  if (active) {
+    sensor.classList.add('active');
+    sensor.setAttribute('data-active', true);
+  } else {
+    sensor.classList.remove('active');
+    sensor.removeAttribute('data-active');
+  }
+
+  checkSensorsHighlighted();
+}
+
+/**
+ * Toggles the highlight in all sensors
+ *
+ * @author mauricio.araldi
+ * @since 0.2.0
+ *
+ * @param {HTMLChangeEvent} ev The event when the checkbox changed
+ */
+function toggleHighlightSensors(ev) {
+  const shouldHighlight = ev.target.checked;
+
+  document.querySelectorAll('.sensor').forEach((sensor) => {
+    setHighlightSensor(sensor, shouldHighlight);
+  });
+}
+
+/**
+ * Toggles the highlight in the sensors of the section
+ *
+ * @author mauricio.araldi
+ * @since 0.2.0
+ *
+ * @param {HTMLChangeEvent} ev The event when the checkbox changed
+ */
+function toggleHighlightSection(ev) {
+  const sectionContainer = ev.target.parentElement.parentElement;
+  const shouldHighlight = ev.target.checked;
+
+  sectionContainer.querySelectorAll('.sensor').forEach((sensor) => {
+    setHighlightSensor(sensor, shouldHighlight);
+  });
+}
+
 /* Initial setup */
 window.onload = () => {
   const canvas = document.querySelector('canvas');
 
   canvas.width = CANVAS_WIDTH;
   canvas.height = CANVAS_HEIGHT;
+
+  createSensorInputs(SENSORS_QT);
 
   codeMirror = CodeMirror.fromTextArea(
     document.querySelector('#code-editor'),
@@ -623,20 +639,30 @@ window.onload = () => {
     codeMirror.getDoc().setValue(`function carBrain(car) {
   car.speed = 20;
 
-  if (car.sensors[4].reading === 10) {
+  if (car.sensors[3].reading === 10 && car.sensors[4].reading === 10) {
     car.speed = 0;
-  } else if (car.sensors[4].reading >= 8) {
+  } else if (car.sensors[3].reading >= 6) {
     car.angle = 5;
-  } else if (car.sensors[4].reading <= 2) {
+  } else if (car.sensors[3].reading <= 4) {
     car.angle = -5;
   }
 }`);
   }
 
   runSimulation(false);
-};
 
-/* Actions */
-document.querySelector('#play').addEventListener('click', () => runSimulation(true));
-document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
-document.querySelector('#save').addEventListener('click', () => saveCode());
+  /* Actions */
+  document.querySelector('#play').addEventListener('click', () => runSimulation(true));
+  document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
+  document.querySelector('#save').addEventListener('click', saveCode);
+  document.querySelector('#highlight-all-sensors').addEventListener('change', toggleHighlightSensors);
+
+  document.querySelectorAll('.sensor-section').forEach((element) => {
+    const input = element.querySelector('input');
+
+    element.addEventListener('change', toggleHighlightSection);
+    input.checked = false;
+  });
+
+  document.querySelector('#highlight-all-sensors').checked = false;
+};
