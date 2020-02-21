@@ -8,6 +8,7 @@ import Noty from 'noty';
 import Utils from './utils';
 import Constants from './constants';
 import LevelManager from './levelManager';
+import Scene from './objects/Scene';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
@@ -24,40 +25,6 @@ Noty.overrideDefaults({
   theme: 'metroui',
   timeout: 3000,
 });
-
-/**
- * Draws the objects of the scene
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @param {GameOject[]} objects The objects to be drawn
- * @return {Boolean} If the objects were drawn
- */
-function drawObjects(ctx, objects) {
-  objects.forEach((object) => {
-    const { points } = object.polygon;
-    let i = points.length - 1;
-
-    ctx.fillStyle = object.color;
-    ctx.save();
-    ctx.translate(object.polygon.pos.x, object.polygon.pos.y);
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-
-    while (i) {
-      ctx.lineTo(points[i].x, points[i].y);
-      i -= 1;
-    }
-
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  });
-
-  return true;
-}
 
 /**
  * Updates the player's car with new information
@@ -153,7 +120,9 @@ function updateSensorsDisplay(sensors) {
  * @param {Number[]} sensorIds IDs of the sensors to be drawn
  * @param {Car} car The car with the sensors to be drawn
  */
-function drawSensors(ctx, sensorIds, car) {
+function drawSensors(sensorIds, car) {
+  const canvas = document.querySelector('canvas');
+  const ctx = canvas.getContext('2d');
   ctx.strokeStyle = Constants.color.sensor;
   ctx.lineWidth = 2;
 
@@ -210,18 +179,17 @@ function checkCollisions(objects, checkAllCollisions) {
  * @author mauricio.araldi
  * @since 0.2.0
  *
- * @param {CanvasRenderingContext2D} ctx Canvas context do render content
+ * @param {Scene} scene Current game scene
  * @param {Car} player The car of the player
  * @param {GameObject} ground The ground of the level
  * @param {GameObject[]} sceneObjects The current objects in the scene
  */
-function animationTick(ctx, player, sceneObjects, ground) {
+function animationTick(scene, player, sceneObjects, ground) {
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
-  ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
-
-  drawObjects(ctx, [ground, ...sceneObjects, player]);
+  scene.clear();
+  scene.draw([ground, ...sceneObjects, player]);
 
   updateplayer(player);
 
@@ -232,7 +200,7 @@ function animationTick(ctx, player, sceneObjects, ground) {
 
     highlightSensors.forEach((sensor) => ids.push(parseInt(sensor.dataset.id, 10)));
 
-    drawSensors(ctx, ids, player);
+    drawSensors(ids, player);
   }
 
   collisions = checkCollisions([...sceneObjects, player]);
@@ -285,13 +253,13 @@ function brainTick(player, sceneObjects) {
 function runSimulation(play) {
   const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
-  const ctx = canvas.getContext('2d');
+  const scene = new Scene(canvas);
   const { ground, objects, player } = currentLevel;
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
       () => {
-        animationTick(ctx, player, objects, ground);
+        animationTick(scene, player, objects, ground);
       },
       1000 / Constants.FRAMES_PER_SECOND,
     );
@@ -309,7 +277,7 @@ function runSimulation(play) {
     animationTicker = null;
     brainTicker = null;
 
-    animationTick(ctx, player, objects, ground);
+    animationTick(scene, player, objects, ground);
   }
 }
 
