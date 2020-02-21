@@ -1,24 +1,20 @@
 import SAT from 'sat';
 
 import Utils from '../utils';
+import Sensor from './Sensor';
+import GameObject from './GameObject';
 
 /**
  * @class
+ * @extends GameObject
  *
- * @param {Number} angle Angle of rotation of the car
  * @param {Object} brainState Current brain state of the car
- * @param {String} color HEX color of the car
- * @param {Number} height Height of the car
- * @param {SAT.Polygon} polygon The polygon that represents car's shape and position
  * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor of the
  * @param {Number} sensorRange The range of the sensors in pixels
- * @param {Object} sensors The sensors of the car
+ * @param {Object{id: Sensor}} sensors The sensors of the car
  * @param {Number} speed Current speed of the car
- * @param {Number} width Width of the car
- * car should have
- * @return {Car} Car object
  */
-export default class Car {
+export default class Car extends GameObject {
   /**
    * @constructor
    *
@@ -34,30 +30,15 @@ export default class Car {
    * @param {Number} sensorRange The range of the sensors in pixels
    * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor of the
    * car should have
-   * @return {Car} Car object
    */
   constructor(color, x, y, width, height, angle, brainState, speed, withSensors,
     sensorRange, sensorBreakpointQt) {
-    this.angle = angle;
+    super(x, y, width, height, angle, color);
+
     this.brainState = brainState;
-    this.color = color;
-    this.height = height;
     this.sensorBreakpointQt = sensorBreakpointQt;
     this.sensorRange = sensorRange;
     this.speed = speed;
-    this.width = width;
-
-    this.polygon = new SAT.Polygon(
-      new SAT.Vector(x, y),
-      [
-        new SAT.Vector(0, 0),
-        new SAT.Vector(width, 0),
-        new SAT.Vector(width, height),
-        new SAT.Vector(0, height),
-      ],
-      width,
-      height,
-    );
 
     if (withSensors) {
       this.sensors = this.buildSensors();
@@ -70,7 +51,7 @@ export default class Car {
    * @author mauricio.araldi
    * @since 0.2.0
    *
-   * @return {Object} The sensors of the car (area and reading, by id)
+   * @return {Object{id: Sensor}} The sensors of the car by id
    */
   buildSensors() {
     const points = this.polygon.points.map((carPoint) => (
@@ -94,45 +75,30 @@ export default class Car {
 
     for (let i = 0; i < angles.length; i += 1) {
       const point = points[Math.floor((i || 1) / pointsPerAngle)];
-      const area = this.getSensorArea(
+
+      sensors[i + 1] = new Sensor(
         point.x,
         point.y,
         angles[i] + this.angle,
+        this.sensorRange,
+        this.sensorBreakpointQt,
       );
-
-      sensors[i + 1] = {
-        area,
-        reading: 0,
-      };
     }
 
     return sensors;
   }
 
   /**
-   * Gets the area of a sensor, acording to the car position
+   * Updates the sensors readings
    *
    * @author mauricio.araldi
    * @since 0.2.0
    *
-   * @param {Number} originX The X point from where the sensor will be drawn
-   * @param {Number} originY The Y point from where the sensor will be drawn
-   * @param {Number} angle The angle to which the sensor will be drawn towards
-   * car should have
-   * @return {Object} The area of the sensor ({x, y}[])
+   * @param {GameObject[]} objects All the objects that can be perceived by the sensors
    */
-  getSensorArea(originX, originY, angle) {
-    const interval = this.sensorRange / this.sensorBreakpointQt;
-    const area = [];
-
-    for (let i = 0; i < this.sensorBreakpointQt; i += 1) {
-      const offset = i * interval;
-      area.push(new SAT.Vector(
-        Math.floor(originX - (offset * Math.cos(Utils.degreesToRadians(angle)))),
-        Math.floor(originY - (offset * Math.sin(Utils.degreesToRadians(angle)))),
-      ));
-    }
-
-    return area;
+  updateSensors(objects) {
+    Object.keys(this.sensors).forEach((key) => 
+      this.sensors[key].updateReading(objects)
+    );
   }
 }

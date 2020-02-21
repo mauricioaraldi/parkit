@@ -64,7 +64,7 @@ const LEVELS_CONFIG = {
         CAR_HEIGHT,
       ),
     ],
-    getPlayerCar: () => new Car(
+    getplayer: () => new Car(
       '#DB2929',
       CANVAS_WIDTH - (CAR_WIDTH + 10),
       CAR_HEIGHT + 60,
@@ -97,10 +97,10 @@ Noty.overrideDefaults({
  * Draws the asphalt on a canvas
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @return {boolean} If asphalt was draw
+ * @return {Boolean} If asphalt was draw
  */
 function drawAsphalt(ctx) {
   ctx.fillStyle = '#282B2A';
@@ -111,10 +111,10 @@ function drawAsphalt(ctx) {
  * Draws the objects of the scene
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @param {Array<Object>} objects The objects to be drawn
+ * @param {GameOject[]} objects The objects to be drawn
  * @return {Boolean} If the objects were drawn
  */
 function drawObjects(ctx, objects) {
@@ -145,11 +145,9 @@ function drawObjects(ctx, objects) {
  * Updates the player's car with new information
  *
  * @author mauricio.araldi
- * @since 0.1.0
- *
- * @return {Object} The updated player car
+ * @since 0.2.0
  */
-function updatePlayerCar(car) {
+function updateplayer(car) {
   const angleState = car.brainState.angle;
   const speedState = car.brainState.speed;
   const { polygon } = car;
@@ -213,50 +211,17 @@ function updatePlayerCar(car) {
 }
 
 /**
- * Updates the sensors readings
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Object} referenceSensors The sensors to get readings of
- * @param {Array<Object>} objects All the objects in the scenery
- * @return {Object} The sensors of the car, with their readings
- */
-function getSensorsReadings(referenceSensors, objects) {
-  const sensors = { ...referenceSensors };
-
-  Object.keys(sensors).forEach((key) => {
-    const sensor = sensors[key];
-
-    sensor.reading = sensor.area.length;
-
-    objects.forEach((object) => {
-      sensor.area.some((point, index) => {
-        if (SAT.pointInPolygon(point, object.polygon)) {
-          sensor.reading = index;
-          return true;
-        }
-
-        return false;
-      });
-    });
-  });
-
-  return sensors;
-}
-
-/**
  * Updates the interface display of sensors
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
- * @param {Object} The sensors of the car
+ * @param {Sensor[]} The sensors of the car
  */
 function updateSensorsDisplay(sensors) {
   Object.keys(sensors).forEach((key) => {
-    const sensor = document.querySelector(`#sensor${key}`);
-    sensor.value = sensors[key].reading;
+    const sensorEl = document.querySelector(`#sensor${key}`);
+    sensorEl.value = sensors[key].reading;
   });
 }
 
@@ -267,9 +232,8 @@ function updateSensorsDisplay(sensors) {
  * @since 0.1.0
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @param {Integer[]} sensorIds IDs of the sensors to be drawn
- * @param {Object} car The car with the sensors to be drawn
- * @return {Boolean} If the sensors were drew
+ * @param {Number[]} sensorIds IDs of the sensors to be drawn
+ * @param {Car} car The car with the sensors to be drawn
  */
 function drawSensors(ctx, sensorIds, car) {
   ctx.strokeStyle = '#FFFFFF';
@@ -289,25 +253,12 @@ function drawSensors(ctx, sensorIds, car) {
 }
 
 /**
- * Steer the car to the sides, from -90 to +90
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {Number} degrees The number of degrees the car will steer
- * @return {Boolean} If the car is set to steer
- */
-// function steer(degrees) {
-
-// }
-
-/**
  * Checks for collisions between objects
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
- * @param {Array<Object>} objects The objects to be drawn
+ * @param {GameObject[]} objects The objects to be checked
  * @param {Boolean} checkAllCollisions If not only the first, but all, collisions
  * should be returned
  * @return {Array | Array<Array>} One or all detected collisions
@@ -323,10 +274,10 @@ function checkCollisions(objects, checkAllCollisions) {
       const collided = SAT.testPolygonPolygon(objectA.polygon, objectB.polygon);
 
       if (collided) {
-        collisions.push(objectA, objectB);
+        collisions.push([objectA, objectB]);
 
         if (!checkAllCollisions) {
-          return collisions;
+          return collisions[0];
         }
       }
     }
@@ -339,35 +290,34 @@ function checkCollisions(objects, checkAllCollisions) {
  * Updates the animation
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @param {Object} playerCar The car of the player
- * @param {Array<Object>} sceneObjects The current objects in the scene
- * @return {Object} The new state of the player's car
+ * @param {Car} player The car of the player
+ * @param {GameObject[]} sceneObjects The current objects in the scene
  */
-function animationTick(ctx, playerCar, sceneObjects) {
+function animationTick(ctx, player, sceneObjects) {
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   drawAsphalt(ctx);
-  drawObjects(ctx, [...sceneObjects, playerCar]);
+  drawObjects(ctx, [...sceneObjects, player]);
 
-  updatePlayerCar(playerCar);
+  updateplayer(player);
 
-  playerCar.sensors = playerCar.buildSensors();
+  player.sensors = player.buildSensors();
 
   if (highlightSensors.length) {
     const ids = [];
 
     highlightSensors.forEach((sensor) => ids.push(parseInt(sensor.dataset.id, 10)));
 
-    drawSensors(ctx, ids, playerCar);
+    drawSensors(ctx, ids, player);
   }
 
-  collisions = checkCollisions([...sceneObjects, playerCar]);
+  collisions = checkCollisions([...sceneObjects, player]);
 
   if (collisions.length) {
     runSimulation(false);
@@ -382,23 +332,23 @@ function animationTick(ctx, playerCar, sceneObjects) {
  * Updats the brain information
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
- * @param {Object} playerCar The car of the player
- * @param {Array<Object>} sceneObjects The current objects in the scene
+ * @param {Car} player The car of the player
+ * @param {GameOBject[]} sceneObjects The current objects in the scene
  * @return {Object} The new state of the player's car brain
  */
-function brainTick(playerCar, sceneObjects) {
+function brainTick(player, sceneObjects) {
   const brainCode = codeMirror.getValue();
-  const carInstructions = { sensors: playerCar.sensors };
+  const carInstructions = { sensors: player.sensors };
   let newBrainState = null;
 
-  const sensors = getSensorsReadings(playerCar.sensors, [...sceneObjects]);
-  updateSensorsDisplay(sensors);
+  player.updateSensors(sceneObjects);
+  updateSensorsDisplay(player.sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
 
-  newBrainState = { ...playerCar.brainState, ...carInstructions };
+  newBrainState = { ...player.brainState, ...carInstructions };
 
   newBrainState.angle = Math.min(newBrainState.angle, MAX_ANGLE);
   newBrainState.sensors = sensors;
@@ -410,7 +360,7 @@ function brainTick(playerCar, sceneObjects) {
  * Starts or stops the simulation
  *
  * @author mauricio.araldi
- * @since 0.1.0
+ * @since 0.2.0
  *
  * @param {Boolean} play If the simulation should be played
  */
@@ -419,19 +369,19 @@ function runSimulation(play) {
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
   const sceneObjects = currentLevel.getObstacles();
-  const playerCar = currentLevel.getPlayerCar();
+  const player = currentLevel.getplayer();
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
       () => {
-        animationTick(ctx, playerCar, sceneObjects);
+        animationTick(ctx, player, sceneObjects);
       },
       1000 / FRAMES_PER_SECOND,
     );
 
     brainTicker = setInterval(
       () => {
-        playerCar.brainState = brainTick(playerCar, sceneObjects);
+        player.brainState = brainTick(player, sceneObjects);
       },
       1000 / BRAIN_TICKS_PER_SECOND,
     );
@@ -442,7 +392,7 @@ function runSimulation(play) {
     animationTicker = null;
     brainTicker = null;
 
-    animationTick(ctx, playerCar, sceneObjects);
+    animationTick(ctx, player, sceneObjects);
   }
 }
 
