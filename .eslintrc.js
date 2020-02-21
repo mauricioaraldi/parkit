@@ -15,7 +15,8 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    "class-methods-use-this": 0,
     "no-use-before-define": ["error", { functions: false }],
-    "no-param-reassign": 0
+    "no-param-reassign": 0,
   },
 };

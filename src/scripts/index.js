@@ -5,83 +5,15 @@ import 'noty/lib/noty.css';
 import 'noty/lib/themes/metroui.css';
 import Noty from 'noty';
 
-import Car from './objects/Car';
 import Utils from './utils';
+import Constants from './constants';
+import LevelManager from './levelManager';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/paraiso-dark.css';
 
-const LS_CODE_KEY = 'parkit_usercode';
-const CANVAS_WIDTH = 1280;
-const CANVAS_HEIGHT = 300;
-const CAR_WIDTH = 200;
-const CAR_HEIGHT = 100;
-const FRAMES_PER_SECOND = 24;
-const BRAIN_TICKS_PER_SECOND = 10;
-const PIXELS_PER_METER = 10;
-const SENSOR_METERS_RANGE = 8;
-const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
-const MAX_ANGLE_CHANGE_PER_TICK = 0.6;
-const MAX_SPEED_CHANGE_PER_TICK = 0.6;
-const MAX_ANGLE = 35;
-const SPEED_RATIO = 60;
-const SENSORS_QT = 20;
-const SENSOR_BREAKPOINTS_QT = 10;
-const OBJECT_COLORS = ['#9CC0E7', '#EEEEEE', '#FCFCFC', '#FAEACB', '#F7DBD7',
-  '#CBBFB0', '#BDC2C2', '#739194', '88BCE8'];
 const CURRENT_LEVEL = 1;
-
-const LEVELS_CONFIG = {
-  1: {
-    getObstacles: () => [
-      new Car(
-        OBJECT_COLORS[0],
-        10,
-        10,
-        CAR_WIDTH,
-        CAR_HEIGHT,
-      ),
-      new Car(
-        OBJECT_COLORS[1],
-        (CAR_WIDTH * 2) + (64 * 2),
-        10,
-        CAR_WIDTH,
-        CAR_HEIGHT,
-      ),
-      new Car(
-        OBJECT_COLORS[2],
-        (CAR_WIDTH * 3) + (64 * 3),
-        10,
-        CAR_WIDTH,
-        CAR_HEIGHT,
-      ),
-      new Car(
-        OBJECT_COLORS[3],
-        (CAR_WIDTH * 4) + (64 * 4),
-        10,
-        CAR_WIDTH,
-        CAR_HEIGHT,
-      ),
-    ],
-    getplayer: () => new Car(
-      '#DB2929',
-      CANVAS_WIDTH - (CAR_WIDTH + 10),
-      CAR_HEIGHT + 60,
-      CAR_WIDTH,
-      CAR_HEIGHT,
-      0,
-      {
-        angle: 0,
-        speed: 0,
-      },
-      0,
-      true,
-      SENSOR_RANGE,
-      SENSOR_BREAKPOINTS_QT,
-    ),
-  },
-};
 
 let codeMirror;
 let animationTicker;
@@ -92,20 +24,6 @@ Noty.overrideDefaults({
   theme: 'metroui',
   timeout: 3000,
 });
-
-/**
- * Draws the asphalt on a canvas
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @return {Boolean} If asphalt was draw
- */
-function drawAsphalt(ctx) {
-  ctx.fillStyle = '#282B2A';
-  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-}
 
 /**
  * Draws the objects of the scene
@@ -160,15 +78,15 @@ function updateplayer(car) {
     let speedChange = null;
 
     if (speedDiff > 0) {
-      speedChange = Math.min(speedDiff, MAX_SPEED_CHANGE_PER_TICK);
+      speedChange = Math.min(speedDiff, Constants.MAX_SPEED_CHANGE_PER_TICK);
     } else if (speedDiff < 0) {
-      speedChange = Math.max(speedDiff, -MAX_SPEED_CHANGE_PER_TICK);
+      speedChange = Math.max(speedDiff, -Constants.MAX_SPEED_CHANGE_PER_TICK);
     }
 
     speed += speedChange;
   }
 
-  realSpeed = speed * (speed / SPEED_RATIO);
+  realSpeed = speed * (speed / Constants.SPEED_RATIO);
 
   car.speed = speed;
 
@@ -177,9 +95,9 @@ function updateplayer(car) {
     let angleChange = null;
 
     if (angleDiff > 0) {
-      angleChange = Math.min(angleDiff, MAX_ANGLE_CHANGE_PER_TICK);
+      angleChange = Math.min(angleDiff, Constants.MAX_ANGLE_CHANGE_PER_TICK);
     } else if (angleDiff < 0) {
-      angleChange = Math.max(angleDiff, -MAX_ANGLE_CHANGE_PER_TICK);
+      angleChange = Math.max(angleDiff, -Constants.MAX_ANGLE_CHANGE_PER_TICK);
     }
 
     angle += angleChange;
@@ -236,7 +154,7 @@ function updateSensorsDisplay(sensors) {
  * @param {Car} car The car with the sensors to be drawn
  */
 function drawSensors(ctx, sensorIds, car) {
-  ctx.strokeStyle = '#FFFFFF';
+  ctx.strokeStyle = Constants.color.sensor;
   ctx.lineWidth = 2;
 
   sensorIds.forEach((id) => {
@@ -294,16 +212,16 @@ function checkCollisions(objects, checkAllCollisions) {
  *
  * @param {CanvasRenderingContext2D} ctx Canvas context do render content
  * @param {Car} player The car of the player
+ * @param {GameObject} ground The ground of the level
  * @param {GameObject[]} sceneObjects The current objects in the scene
  */
-function animationTick(ctx, player, sceneObjects) {
+function animationTick(ctx, player, sceneObjects, ground) {
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 
-  drawAsphalt(ctx);
-  drawObjects(ctx, [...sceneObjects, player]);
+  drawObjects(ctx, [ground, ...sceneObjects, player]);
 
   updateplayer(player);
 
@@ -350,8 +268,8 @@ function brainTick(player, sceneObjects) {
 
   newBrainState = { ...player.brainState, ...carInstructions };
 
-  newBrainState.angle = Math.min(newBrainState.angle, MAX_ANGLE);
-  newBrainState.sensors = sensors;
+  newBrainState.angle = Math.min(newBrainState.angle, Constants.MAX_ANGLE);
+  newBrainState.sensors = player.sensors;
 
   return newBrainState;
 }
@@ -365,25 +283,24 @@ function brainTick(player, sceneObjects) {
  * @param {Boolean} play If the simulation should be played
  */
 function runSimulation(play) {
-  const currentLevel = LEVELS_CONFIG[CURRENT_LEVEL];
+  const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
-  const sceneObjects = currentLevel.getObstacles();
-  const player = currentLevel.getplayer();
+  const { ground, objects, player } = currentLevel;
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
       () => {
-        animationTick(ctx, player, sceneObjects);
+        animationTick(ctx, player, objects, ground);
       },
-      1000 / FRAMES_PER_SECOND,
+      1000 / Constants.FRAMES_PER_SECOND,
     );
 
     brainTicker = setInterval(
       () => {
-        player.brainState = brainTick(player, sceneObjects);
+        player.brainState = brainTick(player, objects);
       },
-      1000 / BRAIN_TICKS_PER_SECOND,
+      1000 / Constants.BRAIN_TICKS_PER_SECOND,
     );
   } else {
     clearInterval(animationTicker);
@@ -392,7 +309,7 @@ function runSimulation(play) {
     animationTicker = null;
     brainTicker = null;
 
-    animationTick(ctx, player, sceneObjects);
+    animationTick(ctx, player, objects, ground);
   }
 }
 
@@ -411,7 +328,7 @@ function saveCode() {
     return false;
   }
 
-  localStorage.setItem(LS_CODE_KEY, code);
+  localStorage.setItem(Constants.LS_CODE_KEY, code);
 
   return true;
 }
@@ -425,7 +342,7 @@ function saveCode() {
  * @return {Boolean} If the user's code is loaded
  */
 function loadCode() {
-  const code = localStorage.getItem(LS_CODE_KEY);
+  const code = localStorage.getItem(Constants.LS_CODE_KEY);
 
   if (!code) {
     return false;
@@ -446,7 +363,7 @@ function loadCode() {
 function checkSensorsHighlighted() {
   const sections = document.querySelectorAll('.sensor-section');
   const activeSensors = document.querySelectorAll('.sensor.active');
-  const sensorsQtPerSection = SENSORS_QT / sections.length;
+  const sensorsQtPerSection = Constants.SENSORS_QT / sections.length;
   const highlightAllCheckbox = document.querySelector('#highlight-all-sensors');
 
   sections.forEach((section) => {
@@ -456,7 +373,7 @@ function checkSensorsHighlighted() {
     input.checked = sectionActiveSensors.length === sensorsQtPerSection;
   });
 
-  highlightAllCheckbox.checked = activeSensors.length === SENSORS_QT;
+  highlightAllCheckbox.checked = activeSensors.length === Constants.SENSORS_QT;
 }
 
 /**
@@ -566,10 +483,10 @@ function toggleHighlightSection(ev) {
 window.onload = () => {
   const canvas = document.querySelector('canvas');
 
-  canvas.width = CANVAS_WIDTH;
-  canvas.height = CANVAS_HEIGHT;
+  canvas.width = Constants.CANVAS_WIDTH;
+  canvas.height = Constants.CANVAS_HEIGHT;
 
-  createSensorInputs(SENSORS_QT);
+  createSensorInputs(Constants.SENSORS_QT);
 
   codeMirror = CodeMirror.fromTextArea(
     document.querySelector('#code-editor'),

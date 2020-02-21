@@ -1,8 +1,5 @@
 import SAT from 'sat';
 
-import Utils from '../utils';
-import Sensor from './Sensor';
-
 /**
  * @class
  *

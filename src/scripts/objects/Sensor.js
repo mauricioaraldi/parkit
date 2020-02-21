@@ -62,13 +62,15 @@ export default class Sensor {
   updateReading(objects) {
     this.reading = this.area.length;
 
-    objects.some((object) => {
-      return this.area.some((point, index) => {
+    objects.some((object) => (
+      this.area.some((point, index) => {
         if (SAT.pointInPolygon(point, object.polygon)) {
           this.reading = index;
           return true;
         }
-      });
-    });
+
+        return false;
+      })
+    ));
   }
 }

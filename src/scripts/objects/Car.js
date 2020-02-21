@@ -1,6 +1,3 @@
-import SAT from 'sat';
-
-import Utils from '../utils';
 import Sensor from './Sensor';
 import GameObject from './GameObject';
 
@@ -97,8 +94,6 @@ export default class Car extends GameObject {
    * @param {GameObject[]} objects All the objects that can be perceived by the sensors
    */
   updateSensors(objects) {
-    Object.keys(this.sensors).forEach((key) => 
-      this.sensors[key].updateReading(objects)
-    );
+    Object.keys(this.sensors).forEach((key) => this.sensors[key].updateReading(objects));
   }
 }
