@@ -5,10 +5,13 @@ import 'noty/lib/noty.css';
 import 'noty/lib/themes/metroui.css';
 import Noty from 'noty';
 
-import Utils from './utils';
-import Constants from './constants';
-import LevelManager from './levelManager';
 import Scene from './objects/Scene';
+
+import Constants from './constants';
+import Interface from './interface';
+import LevelManager from './levelManager';
+import Stage from './stage';
+import Utils from './utils';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
@@ -32,7 +35,7 @@ Noty.overrideDefaults({
  * @author mauricio.araldi
  * @since 0.2.0
  */
-function updateplayer(car) {
+function updatePlayer(car) {
   const angleState = car.brainState.angle;
   const speedState = car.brainState.speed;
   const { polygon } = car;
@@ -96,50 +99,6 @@ function updateplayer(car) {
 }
 
 /**
- * Updates the interface display of sensors
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {Sensor[]} The sensors of the car
- */
-function updateSensorsDisplay(sensors) {
-  Object.keys(sensors).forEach((key) => {
-    const sensorEl = document.querySelector(`#sensor${key}`);
-    sensorEl.value = sensors[key].reading;
-  });
-}
-
-/**
- * Draws the sensors to show their ranges
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @param {CanvasRenderingContext2D} ctx Canvas context do render content
- * @param {Number[]} sensorIds IDs of the sensors to be drawn
- * @param {Car} car The car with the sensors to be drawn
- */
-function drawSensors(sensorIds, car) {
-  const canvas = document.querySelector('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = Constants.color.sensor;
-  ctx.lineWidth = 2;
-
-  sensorIds.forEach((id) => {
-    const { area } = car.sensors[id];
-
-    ctx.beginPath();
-    ctx.moveTo(area[0].x, area[0].y);
-    ctx.lineTo(area[area.length - 1].x, area[area.length - 1].y);
-    ctx.closePath();
-    ctx.stroke();
-  });
-
-  ctx.restore();
-}
-
-/**
  * Checks for collisions between objects
  *
  * @author mauricio.araldi
@@ -191,7 +150,7 @@ function animationTick(scene, player, sceneObjects, ground) {
   scene.clear();
   scene.draw([ground, ...sceneObjects, player]);
 
-  updateplayer(player);
+  updatePlayer(player);
 
   player.sensors = player.buildSensors();
 
@@ -200,7 +159,7 @@ function animationTick(scene, player, sceneObjects, ground) {
 
     highlightSensors.forEach((sensor) => ids.push(parseInt(sensor.dataset.id, 10)));
 
-    drawSensors(ids, player);
+    Stage.drawSensors(ids, player);
   }
 
   collisions = checkCollisions([...sceneObjects, player]);
@@ -230,7 +189,7 @@ function brainTick(player, sceneObjects) {
   let newBrainState = null;
 
   player.updateSensors(sceneObjects);
-  updateSensorsDisplay(player.sensors);
+  Interface.updateSensorsDisplay(player.sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
 
@@ -281,172 +240,6 @@ function runSimulation(play) {
   }
 }
 
-/**
- * Saves user's code in localStorage
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @return {Boolean} If the code is saved
- */
-function saveCode() {
-  const code = codeMirror.getValue();
-
-  if (!code) {
-    return false;
-  }
-
-  localStorage.setItem(Constants.LS_CODE_KEY, code);
-
-  return true;
-}
-
-/**
- * Loads user's code from localStorage
- *
- * @author mauricio.araldi
- * @since 0.1.0
- *
- * @return {Boolean} If the user's code is loaded
- */
-function loadCode() {
-  const code = localStorage.getItem(Constants.LS_CODE_KEY);
-
-  if (!code) {
-    return false;
-  }
-
-  codeMirror.setValue(code);
-
-  return true;
-}
-
-/**
- * Checks if all sensors are highlighted and if the checkbox should
- * be checked
- *
- * @author mauricio.araldi
- * @since 0.2.0
- */
-function checkSensorsHighlighted() {
-  const sections = document.querySelectorAll('.sensor-section');
-  const activeSensors = document.querySelectorAll('.sensor.active');
-  const sensorsQtPerSection = Constants.SENSORS_QT / sections.length;
-  const highlightAllCheckbox = document.querySelector('#highlight-all-sensors');
-
-  sections.forEach((section) => {
-    const sectionActiveSensors = section.querySelectorAll('.sensor.active');
-    const input = section.querySelector('input');
-
-    input.checked = sectionActiveSensors.length === sensorsQtPerSection;
-  });
-
-  highlightAllCheckbox.checked = activeSensors.length === Constants.SENSORS_QT;
-}
-
-/**
- * Creates the input field for the sensors
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {Number} sensorsQt The quantity of sensors
- */
-function createSensorInputs(sensorsQt) {
-  const sectionContainers = [
-    document.querySelector('#front-right-section > div'),
-    document.querySelector('#rear-right-section > div'),
-    document.querySelector('#rear-left-section > div'),
-    document.querySelector('#front-left-section > div'),
-  ];
-
-  for (let i = 1; i <= sensorsQt; i += 1) {
-    const sensorContainer = document.createElement('div');
-    const sensorTitle = document.createElement('span');
-    const sensorInput = document.createElement('input');
-    let sectionContainer = sectionContainers[Math.floor((i - 1) / 5)];
-
-    sensorTitle.textContent = i;
-
-    sensorInput.setAttribute('readonly', true);
-    sensorInput.setAttribute('type', 'text');
-    sensorInput.setAttribute('id', `sensor${i}`);
-
-    sensorContainer.classList.add('sensor');
-    sensorContainer.setAttribute('data-id', i);
-    sensorContainer.append(sensorTitle);
-    sensorContainer.append(sensorInput);
-
-    sensorContainer.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-
-      const isActive = sensorContainer.dataset.active;
-
-      setHighlightSensor(sensorContainer, !isActive);
-    });
-
-    if (!sectionContainer) {
-      sectionContainer = sectionContainers[sectionContainers.length - 1];
-    }
-
-    sectionContainer.append(sensorContainer);
-  }
-}
-
-/**
- * Toggles the highlight in one sensor
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {HTMLInputElement} sensor The sensor to highlight
- * @param {Boolean} active If the sensor should be marked as active
- */
-function setHighlightSensor(sensor, active) {
-  if (active) {
-    sensor.classList.add('active');
-    sensor.setAttribute('data-active', true);
-  } else {
-    sensor.classList.remove('active');
-    sensor.removeAttribute('data-active');
-  }
-
-  checkSensorsHighlighted();
-}
-
-/**
- * Toggles the highlight in all sensors
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {HTMLChangeEvent} ev The event when the checkbox changed
- */
-function toggleHighlightSensors(ev) {
-  const shouldHighlight = ev.target.checked;
-
-  document.querySelectorAll('.sensor').forEach((sensor) => {
-    setHighlightSensor(sensor, shouldHighlight);
-  });
-}
-
-/**
- * Toggles the highlight in the sensors of the section
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {HTMLChangeEvent} ev The event when the checkbox changed
- */
-function toggleHighlightSection(ev) {
-  const sectionContainer = ev.target.parentElement.parentElement;
-  const shouldHighlight = ev.target.checked;
-
-  sectionContainer.querySelectorAll('.sensor').forEach((sensor) => {
-    setHighlightSensor(sensor, shouldHighlight);
-  });
-}
-
 /* Initial setup */
 window.onload = () => {
   const canvas = document.querySelector('canvas');
@@ -454,7 +247,7 @@ window.onload = () => {
   canvas.width = Constants.CANVAS_WIDTH;
   canvas.height = Constants.CANVAS_HEIGHT;
 
-  createSensorInputs(Constants.SENSORS_QT);
+  Interface.createSensorInputs(Constants.SENSORS_QT);
 
   codeMirror = CodeMirror.fromTextArea(
     document.querySelector('#code-editor'),
@@ -468,9 +261,13 @@ window.onload = () => {
   const codeMirrorElement = document.querySelector('.CodeMirror');
   const codeMirrorTop = codeMirrorElement.getClientRects()[0].top;
   const codeMirrorHeight = window.innerHeight - codeMirrorTop;
+  const code = Interface.loadCode();
+
   codeMirrorElement.style.height = `${codeMirrorHeight}px`;
 
-  if (!loadCode()) {
+  if (code) {
+    codeMirror.setValue(code);
+  } else {
     codeMirror.getDoc().setValue(`function carBrain(car) {
   car.speed = 20;
 
@@ -489,13 +286,13 @@ window.onload = () => {
   /* Actions */
   document.querySelector('#play').addEventListener('click', () => runSimulation(true));
   document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
-  document.querySelector('#save').addEventListener('click', saveCode);
-  document.querySelector('#highlight-all-sensors').addEventListener('change', toggleHighlightSensors);
+  document.querySelector('#save').addEventListener('click', () => Interface.saveCode(codeMirror.getValue()));
+  document.querySelector('#highlight-all-sensors').addEventListener('change', Interface.toggleHighlightSensors);
 
   document.querySelectorAll('.sensor-section').forEach((element) => {
     const input = element.querySelector('input');
 
-    element.addEventListener('change', toggleHighlightSection);
+    element.addEventListener('change', Interface.toggleHighlightSection);
     input.checked = false;
   });
 
