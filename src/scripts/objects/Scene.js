@@ -1,3 +1,5 @@
+import SAT from 'sat';
+
 /**
  * @class
  *
@@ -59,5 +61,39 @@ export default class GameObject {
     });
 
     return true;
+  }
+
+  /**
+   * Checks for collisions between objects
+   *
+   * @author mauricio.araldi
+   * @since 0.2.0
+   *
+   * @param {GameObject[]} objects The objects to be checked
+   * @param {Boolean} checkAllCollisions If not only the first, but all, collisions
+   * should be returned
+   * @return {Array | Array<Array>} One or all detected collisions
+   */
+  checkCollisions(objects, checkAllCollisions) {
+    const collisions = [];
+
+    for (let i = objects.length - 1; i >= 0; i -= 1) {
+      const objectA = objects[i];
+
+      for (let j = i - 1; j >= 0; j -= 1) {
+        const objectB = objects[j];
+        const collided = SAT.testPolygonPolygon(objectA.polygon, objectB.polygon);
+
+        if (collided) {
+          collisions.push([objectA, objectB]);
+
+          if (!checkAllCollisions) {
+            return collisions[0];
+          }
+        }
+      }
+    }
+
+    return collisions;
   }
 }

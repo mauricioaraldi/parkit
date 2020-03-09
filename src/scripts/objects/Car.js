@@ -1,5 +1,8 @@
+import SAT from 'sat';
 import Sensor from './Sensor';
 import GameObject from './GameObject';
+import Constants from '../constants';
+import Utils from '../utils';
 
 /**
  * @class
@@ -95,5 +98,96 @@ export default class Car extends GameObject {
    */
   updateSensors(objects) {
     Object.keys(this.sensors).forEach((key) => this.sensors[key].updateReading(objects));
+  }
+
+  /**
+   * Calculates how much the car's angle should change to match its brain state
+   *
+   * @author mauricio.araldi
+   * @since 0.2.0
+   *
+   * @return {Number} How much the angle changed
+   */
+  proccessCarBrainAngle() {
+    const angleState = this.brainState.angle;
+    let angleChange = 0;
+
+    if (this.angle !== angleState) {
+      const angleDiff = angleState - this.angle;
+
+      if (angleDiff > 0) {
+        angleChange = Math.min(angleDiff, Constants.MAX_ANGLE_CHANGE_PER_TICK);
+      } else if (angleDiff < 0) {
+        angleChange = Math.max(angleDiff, -Constants.MAX_ANGLE_CHANGE_PER_TICK);
+      }
+    }
+
+    this.angle += angleChange;
+
+    return angleChange;
+  }
+
+  /**
+   * Calculates how much the car's speed should change to match its brain state
+   *
+   * @author mauricio.araldi
+   * @since 0.2.0
+   *
+   * @return {Number} How much the speed changed
+   */
+  proccessCarBrainSpeed() {
+    const speedState = this.brainState.speed;
+    let speedChange = 0;
+
+    if (this.speed !== speedState) {
+      const speedDiff = speedState - this.speed;
+
+      if (speedDiff > 0) {
+        speedChange = Math.min(speedDiff, Constants.MAX_SPEED_CHANGE_PER_TICK);
+      } else if (speedDiff < 0) {
+        speedChange = Math.max(speedDiff, -Constants.MAX_SPEED_CHANGE_PER_TICK);
+      }
+    }
+
+    this.speed += speedChange;
+
+    return speedChange;
+  }
+
+  /**
+   * Updates the car according to its brain state
+   *
+   * @author mauricio.araldi
+   * @since 0.2.0
+   */
+  update() {
+    this.proccessCarBrainSpeed();
+    const brainAngleChange = this.proccessCarBrainAngle();
+    const realSpeed = this.speed * (this.speed / Constants.SPEED_RATIO);
+
+    if (!realSpeed) {
+      return;
+    }
+
+    const angleRad = Utils.degreesToRadians(this.angle);
+    const angleDiffRad = Utils.degreesToRadians(brainAngleChange);
+
+    this.polygon.pos.x -= (realSpeed * Math.cos(angleRad));
+    this.polygon.pos.y -= (realSpeed * Math.sin(angleRad));
+
+    const points = this.polygon.points.map((point) => {
+      const centerX = point.x - this.width / 2;
+      const centerY = point.y - this.height / 2;
+
+      const rotatedX = centerX * Math.cos(angleDiffRad) - centerY * Math.sin(angleDiffRad);
+      const rotatedY = centerX * Math.sin(angleDiffRad) + centerY * Math.cos(angleDiffRad);
+
+      return new SAT.Vector(
+        rotatedX + this.width / 2,
+        rotatedY + this.height / 2,
+      );
+    });
+
+    this.polygon.setPoints(points);
   }
 }

@@ -1,6 +1,5 @@
 import CodeMirror from 'codemirror/lib/codemirror';
 import 'codemirror/mode/javascript/javascript';
-import SAT from 'sat';
 import 'noty/lib/noty.css';
 import 'noty/lib/themes/metroui.css';
 import Noty from 'noty';
@@ -11,7 +10,6 @@ import Constants from './constants';
 import Interface from './interface';
 import LevelManager from './levelManager';
 import Stage from './stage';
-import Utils from './utils';
 
 import '../styles/index.css';
 import 'codemirror/lib/codemirror.css';
@@ -28,109 +26,6 @@ Noty.overrideDefaults({
   theme: 'metroui',
   timeout: 3000,
 });
-
-/**
- * Updates the player's car with new information
- *
- * @author mauricio.araldi
- * @since 0.2.0
- */
-function updatePlayer(car) {
-  const angleState = car.brainState.angle;
-  const speedState = car.brainState.speed;
-  const { polygon } = car;
-  let { angle, speed } = car;
-  let newAngleDiff = null;
-  let realSpeed = null;
-
-  if (car.speed !== speedState) {
-    const speedDiff = speedState - car.speed;
-    let speedChange = null;
-
-    if (speedDiff > 0) {
-      speedChange = Math.min(speedDiff, Constants.MAX_SPEED_CHANGE_PER_TICK);
-    } else if (speedDiff < 0) {
-      speedChange = Math.max(speedDiff, -Constants.MAX_SPEED_CHANGE_PER_TICK);
-    }
-
-    speed += speedChange;
-  }
-
-  realSpeed = speed * (speed / Constants.SPEED_RATIO);
-
-  car.speed = speed;
-
-  if (realSpeed && car.angle !== angleState) {
-    const angleDiff = angleState - car.angle;
-    let angleChange = null;
-
-    if (angleDiff > 0) {
-      angleChange = Math.min(angleDiff, Constants.MAX_ANGLE_CHANGE_PER_TICK);
-    } else if (angleDiff < 0) {
-      angleChange = Math.max(angleDiff, -Constants.MAX_ANGLE_CHANGE_PER_TICK);
-    }
-
-    angle += angleChange;
-
-    newAngleDiff = Utils.degreesToRadians(angleChange);
-  }
-
-  car.angle = angle;
-
-  car.polygon.pos.x -= (realSpeed * Math.cos(Utils.degreesToRadians(angle)));
-  car.polygon.pos.y -= (realSpeed * Math.sin(Utils.degreesToRadians(angle)));
-
-  if (newAngleDiff) {
-    const points = polygon.points.map((point) => {
-      const centerX = point.x - car.width / 2;
-      const centerY = point.y - car.height / 2;
-
-      const rotatedX = centerX * Math.cos(newAngleDiff) - centerY * Math.sin(newAngleDiff);
-      const rotatedY = centerX * Math.sin(newAngleDiff) + centerY * Math.cos(newAngleDiff);
-
-      return new SAT.Vector(
-        rotatedX + car.width / 2,
-        rotatedY + car.height / 2,
-      );
-    });
-
-    car.polygon.setPoints(points);
-  }
-}
-
-/**
- * Checks for collisions between objects
- *
- * @author mauricio.araldi
- * @since 0.2.0
- *
- * @param {GameObject[]} objects The objects to be checked
- * @param {Boolean} checkAllCollisions If not only the first, but all, collisions
- * should be returned
- * @return {Array | Array<Array>} One or all detected collisions
- */
-function checkCollisions(objects, checkAllCollisions) {
-  const collisions = [];
-
-  for (let i = objects.length - 1; i >= 0; i -= 1) {
-    const objectA = objects[i];
-
-    for (let j = i - 1; j >= 0; j -= 1) {
-      const objectB = objects[j];
-      const collided = SAT.testPolygonPolygon(objectA.polygon, objectB.polygon);
-
-      if (collided) {
-        collisions.push([objectA, objectB]);
-
-        if (!checkAllCollisions) {
-          return collisions[0];
-        }
-      }
-    }
-  }
-
-  return collisions;
-}
 
 /**
  * Updates the animation
@@ -150,7 +45,7 @@ function animationTick(scene, player, sceneObjects, ground) {
   scene.clear();
   scene.draw([ground, ...sceneObjects, player]);
 
-  updatePlayer(player);
+  player.update();
 
   player.sensors = player.buildSensors();
 
@@ -162,7 +57,7 @@ function animationTick(scene, player, sceneObjects, ground) {
     Stage.drawSensors(ids, player);
   }
 
-  collisions = checkCollisions([...sceneObjects, player]);
+  collisions = scene.checkCollisions([...sceneObjects, player]);
 
   if (collisions.length) {
     runSimulation(false);
