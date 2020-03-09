@@ -93,7 +93,7 @@ function brainTick(player, sceneObjects) {
   newBrainState.angle = Math.min(newBrainState.angle, Constants.MAX_ANGLE);
   newBrainState.sensors = player.sensors;
 
-  return newBrainState;
+  player.brainState = newBrainState;
 }
 
 /**
@@ -112,19 +112,15 @@ function runSimulation(play) {
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
-      () => {
-        animationTick(scene, player, objects, ground);
-      },
+      () => animationTick(scene, player, objects, ground),
       1000 / Constants.FRAMES_PER_SECOND,
     );
 
     brainTicker = setInterval(
-      () => {
-        player.brainState = brainTick(player, objects);
-      },
+      () => brainTick(player, objects),
       1000 / Constants.BRAIN_TICKS_PER_SECOND,
     );
-  } else {
+  } else if (!play) {
     clearInterval(animationTicker);
     clearInterval(brainTicker);
 
