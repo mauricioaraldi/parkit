@@ -49,10 +49,13 @@ function animationTick(scene, level) {
 
   if (level.checkGoal()) {
     runSimulation(false, false);
+
     new Noty({
       text: 'You reached the goal!',
       type: 'success',
     }).show();
+
+    return;
   }
 
   player.update();
