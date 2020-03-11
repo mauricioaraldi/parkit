@@ -172,8 +172,11 @@ export default class Car extends GameObject {
     const angleRad = Utils.degreesToRadians(this.angle);
     const angleDiffRad = Utils.degreesToRadians(brainAngleChange);
 
-    this.polygon.pos.x -= (realSpeed * Math.cos(angleRad));
-    this.polygon.pos.y -= (realSpeed * Math.sin(angleRad));
+    this.x -= (realSpeed * Math.cos(angleRad));
+    this.y -= (realSpeed * Math.sin(angleRad));
+
+    this.polygon.pos.x = this.x;
+    this.polygon.pos.y = this.y;
 
     const points = this.polygon.points.map((point) => {
       const centerX = point.x - this.width / 2;

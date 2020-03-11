@@ -6,10 +6,11 @@ const CANVAS_WIDTH = 1280;
 const CAR_HEIGHT = 100;
 const CAR_WIDTH = 200;
 const COLORS = {
-  player: '#DB2929',
-  sensor: '#EEEEEE',
   asphalt: '#282B2A',
   generic: ['#F7DBD7', '#CBBFB0', '#FAEACB', '#BDC2C2', '#739194', '#88BCE8', '#9CC0E7', '#FCFCFC'],
+  goalArea: '#FFD700',
+  player: '#DB2929',
+  sensor: '#EEEEEE',
 };
 const FRAMES_PER_SECOND = 24;
 const LS_CODE_KEY = 'parkit_usercode';

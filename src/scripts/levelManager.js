@@ -78,6 +78,14 @@ function getLevel(
         ),
       ],
       new GameObject(0, 0, canvasWidth, canvasHeight, 0, colors.asphalt),
+      new GameObject(
+        carWidth + 25,
+        5,
+        carWidth + 90,
+        carHeight + 10,
+        0,
+        colors.goalArea,
+      ),
     );
 
     default:

@@ -34,16 +34,26 @@ Noty.overrideDefaults({
  * @since 0.2.0
  *
  * @param {Scene} scene Current game scene
- * @param {Car} player The car of the player
- * @param {GameObject} ground The ground of the level
- * @param {GameObject[]} sceneObjects The current objects in the scene
+ * @param {Level} level The current game level
  */
-function animationTick(scene, player, sceneObjects, ground) {
+function animationTick(scene, level) {
+  const {
+    goalArea, ground, player, objects,
+  } = level;
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
   scene.clear();
-  scene.draw([ground, ...sceneObjects, player]);
+  scene.draw([ground, ...objects, player]);
+  scene.draw(goalArea, false);
+
+  if (level.checkGoal()) {
+    runSimulation(false, false);
+    new Noty({
+      text: 'You reached the goal!',
+      type: 'success',
+    }).show();
+  }
 
   player.update();
 
@@ -57,7 +67,7 @@ function animationTick(scene, player, sceneObjects, ground) {
     Stage.drawSensors(ids, player);
   }
 
-  collisions = scene.checkCollisions([...sceneObjects, player]);
+  collisions = scene.checkCollisions([...objects, player]);
 
   if (collisions.length) {
     runSimulation(false);
@@ -103,16 +113,17 @@ function brainTick(player, sceneObjects) {
  * @since 0.2.0
  *
  * @param {Boolean} play If the simulation should be played
+ * @param {Boolean} reset If the game should be resetted
  */
-function runSimulation(play) {
+function runSimulation(play, reset = true) {
   const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
   const scene = new Scene(canvas);
-  const { ground, objects, player } = currentLevel;
+  const { objects, player } = currentLevel;
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
-      () => animationTick(scene, player, objects, ground),
+      () => animationTick(scene, currentLevel),
       1000 / Constants.FRAMES_PER_SECOND,
     );
 
@@ -127,7 +138,9 @@ function runSimulation(play) {
     animationTicker = null;
     brainTicker = null;
 
-    animationTick(scene, player, objects, ground);
+    if (reset) {
+      animationTick(scene, currentLevel);
+    }
   }
 }
 

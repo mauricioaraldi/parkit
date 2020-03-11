@@ -42,4 +42,31 @@ export default class GameObject {
       height,
     );
   }
+
+  /**
+   * Checks if this object is inside another object
+   *
+   * @author mauricio.araldi
+   * @since 0.2.0
+   *
+   * @param {GameObject} outerObject The object to be used as target area
+   * @return {Boolean} If the game object is inside target game object
+   */
+  testInsideAnotherObject(outerObject) {
+    const innerStartX = this.x;
+    const innerEndX = this.x + this.width;
+    const innerStartY = this.y;
+    const innerEndY = this.y + this.height;
+    const outerStartX = outerObject.x;
+    const outerEndX = outerObject.x + outerObject.width;
+    const outerStartY = outerObject.y;
+    const outerEndY = outerObject.y + outerObject.height;
+
+    return (
+      innerStartX >= outerStartX
+      && innerEndX <= outerEndX
+      && innerStartY >= outerStartY
+      && innerEndY <= outerEndY
+    );
+  }
 }
