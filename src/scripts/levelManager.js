@@ -87,6 +87,12 @@ function getLevel(
         0,
         colors.goalArea,
       ),
+      [
+        new GameObject(0, 0, canvasWidth, 1),
+        new GameObject(0, canvasHeight, canvasWidth, 1),
+        new GameObject(0, 0, 1, canvasHeight),
+        new GameObject(canvasWidth - 1, 0, 1, canvasHeight),
+      ],
     );
 
     default:
