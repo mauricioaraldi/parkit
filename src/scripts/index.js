@@ -93,7 +93,7 @@ function animationTick(scene, level) {
  */
 function brainTick(player, sceneObjects) {
   const brainCode = codeMirror.getValue();
-  const carInstructions = { sensors: player.sensors };
+  const carInstructions = { sensors: player.sensors, memory: player.brainState.memory };
   let newBrainState = null;
 
   player.updateSensors(sceneObjects);

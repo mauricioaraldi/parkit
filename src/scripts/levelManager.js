@@ -41,6 +41,7 @@ function getLevel(
         {
           angle: 0,
           speed: 0,
+          memory: {},
         },
         0,
         true,

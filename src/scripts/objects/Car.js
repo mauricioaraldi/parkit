@@ -163,7 +163,7 @@ export default class Car extends GameObject {
   update() {
     this.proccessCarBrainSpeed();
     const brainAngleChange = this.proccessCarBrainAngle();
-    const realSpeed = this.speed * (this.speed / Constants.SPEED_RATIO);
+    const realSpeed = this.speed * (Math.abs(this.speed) / Constants.SPEED_RATIO);
 
     if (!realSpeed) {
       return;
