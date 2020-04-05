@@ -38,7 +38,7 @@ Noty.overrideDefaults({
  */
 function animationTick(scene, level) {
   const {
-    goalArea, ground, player, objects,
+    goalArea, ground, player, objects, limits,
   } = level;
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
@@ -70,7 +70,7 @@ function animationTick(scene, level) {
     Stage.drawSensors(ids, player);
   }
 
-  collisions = scene.checkCollisions([...objects, player]);
+  collisions = scene.checkCollisions([...objects, player, ...limits]);
 
   if (collisions.length) {
     runSimulation(false);
@@ -89,14 +89,15 @@ function animationTick(scene, level) {
  *
  * @param {Car} player The car of the player
  * @param {GameOBject[]} sceneObjects The current objects in the scene
+ * @param {GameObject[]} limits The limits of the scenario
  * @return {Object} The new state of the player's car brain
  */
-function brainTick(player, sceneObjects) {
+function brainTick(player, sceneObjects, limits) {
   const brainCode = codeMirror.getValue();
   const carInstructions = { sensors: player.sensors, memory: player.brainState.memory };
   let newBrainState = null;
 
-  player.updateSensors(sceneObjects);
+  player.updateSensors([...sceneObjects, ...limits]);
   Interface.updateSensorsDisplay(player.sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
@@ -122,7 +123,7 @@ function runSimulation(play, reset = true) {
   const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
   const scene = new Scene(canvas);
-  const { objects, player } = currentLevel;
+  const { objects, player, limits } = currentLevel;
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
@@ -131,7 +132,7 @@ function runSimulation(play, reset = true) {
     );
 
     brainTicker = setInterval(
-      () => brainTick(player, objects),
+      () => brainTick(player, objects, limits),
       1000 / Constants.BRAIN_TICKS_PER_SECOND,
     );
   } else if (!play) {

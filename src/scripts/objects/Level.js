@@ -5,6 +5,7 @@
  * @param {GameObject[]} objects The objects which the player can collide
  * @param {Object} ground The ground layout
  * @param {GameObject} goalArea The goal area the player should reach
+ * @param {GameObject[]} limits The limits of the level
  */
 export default class Level {
   /**
@@ -14,12 +15,14 @@ export default class Level {
    * @param {GameObject[]} objects The objects which the player can collide
    * @param {Object} ground The ground layout
    * @param {GameObject} goalArea The goal area the player should reach
+   * @param {GameObject[]} limits The limits of the level
    */
-  constructor(player, objects, ground, goalArea) {
+  constructor(player, objects, ground, goalArea, limits) {
     this.player = player;
     this.objects = objects;
     this.ground = ground;
     this.goalArea = goalArea;
+    this.limits = limits;
   }
 
   /**
