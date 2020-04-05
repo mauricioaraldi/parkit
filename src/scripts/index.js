@@ -47,7 +47,7 @@ function animationTick(scene, level) {
   scene.draw([ground, ...objects, player]);
   scene.draw(goalArea, false);
 
-  if (level.checkGoal()) {
+  if (player.parkingBreak && level.checkGoal()) {
     runSimulation(false, false);
 
     new Noty({
@@ -108,6 +108,7 @@ function brainTick(player, sceneObjects, limits) {
   newBrainState.sensors = player.sensors;
 
   player.brainState = newBrainState;
+  player.parkingBreak = newBrainState.parkingBreak;
 }
 
 /**

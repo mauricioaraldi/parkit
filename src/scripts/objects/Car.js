@@ -26,19 +26,21 @@ export default class Car extends GameObject {
    * @param {Number} angle Angle of rotation of the car
    * @param {Object} brainState Current brain state of the car
    * @param {Number} speed Current speed of the car
+   * @param {Boolean} parkingBreak The current state of the parking break
    * @param {Boolean} withSensors Of the car should have distance sensors
    * @param {Number} sensorRange The range of the sensors in pixels
    * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor of the
    * car should have
    */
-  constructor(color, x, y, width, height, angle, brainState, speed, withSensors,
-    sensorRange, sensorBreakpointQt) {
+  constructor(color, x, y, width, height, angle, brainState, speed, parkingBreak,
+    withSensors, sensorRange, sensorBreakpointQt) {
     super(x, y, width, height, angle, color);
 
     this.brainState = brainState;
     this.sensorBreakpointQt = sensorBreakpointQt;
     this.sensorRange = sensorRange;
     this.speed = speed;
+    this.parkingBreak = parkingBreak;
 
     if (withSensors) {
       this.sensors = this.buildSensors();
@@ -136,8 +138,12 @@ export default class Car extends GameObject {
    * @return {Number} How much the speed changed
    */
   proccessCarBrainSpeed() {
-    const speedState = this.brainState.speed;
+    let speedState = this.brainState.speed;
     let speedChange = 0;
+
+    if (this.parkingBreak) {
+      speedState = 0;
+    }
 
     if (this.speed !== speedState) {
       const speedDiff = speedState - this.speed;

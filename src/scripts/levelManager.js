@@ -44,6 +44,7 @@ function getLevel(
           memory: {},
         },
         0,
+        false,
         true,
         sensorRange,
         sensorBreakpointQt,
