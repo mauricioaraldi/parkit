@@ -26,19 +26,21 @@ export default class Car extends GameObject {
    * @param {Number} angle Angle of rotation of the car
    * @param {Object} brainState Current brain state of the car
    * @param {Number} speed Current speed of the car
+   * @param {Boolean} parkingBreak The current state of the parking break
    * @param {Boolean} withSensors Of the car should have distance sensors
    * @param {Number} sensorRange The range of the sensors in pixels
    * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor of the
    * car should have
    */
-  constructor(color, x, y, width, height, angle, brainState, speed, withSensors,
-    sensorRange, sensorBreakpointQt) {
+  constructor(color, x, y, width, height, angle, brainState, speed, parkingBreak,
+    withSensors, sensorRange, sensorBreakpointQt) {
     super(x, y, width, height, angle, color);
 
     this.brainState = brainState;
     this.sensorBreakpointQt = sensorBreakpointQt;
     this.sensorRange = sensorRange;
     this.speed = speed;
+    this.parkingBreak = parkingBreak;
 
     if (withSensors) {
       this.sensors = this.buildSensors();
@@ -136,8 +138,12 @@ export default class Car extends GameObject {
    * @return {Number} How much the speed changed
    */
   proccessCarBrainSpeed() {
-    const speedState = this.brainState.speed;
+    let speedState = this.brainState.speed;
     let speedChange = 0;
+
+    if (this.parkingBreak) {
+      speedState = 0;
+    }
 
     if (this.speed !== speedState) {
       const speedDiff = speedState - this.speed;
@@ -163,7 +169,7 @@ export default class Car extends GameObject {
   update() {
     this.proccessCarBrainSpeed();
     const brainAngleChange = this.proccessCarBrainAngle();
-    const realSpeed = this.speed * (this.speed / Constants.SPEED_RATIO);
+    const realSpeed = this.speed * (Math.abs(this.speed) / Constants.SPEED_RATIO);
 
     if (!realSpeed) {
       return;
@@ -172,8 +178,11 @@ export default class Car extends GameObject {
     const angleRad = Utils.degreesToRadians(this.angle);
     const angleDiffRad = Utils.degreesToRadians(brainAngleChange);
 
-    this.polygon.pos.x -= (realSpeed * Math.cos(angleRad));
-    this.polygon.pos.y -= (realSpeed * Math.sin(angleRad));
+    this.x -= (realSpeed * Math.cos(angleRad));
+    this.y -= (realSpeed * Math.sin(angleRad));
+
+    this.polygon.pos.x = this.x;
+    this.polygon.pos.y = this.y;
 
     const points = this.polygon.points.map((point) => {
       const centerX = point.x - this.width / 2;

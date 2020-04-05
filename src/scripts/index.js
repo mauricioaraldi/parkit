@@ -34,16 +34,29 @@ Noty.overrideDefaults({
  * @since 0.2.0
  *
  * @param {Scene} scene Current game scene
- * @param {Car} player The car of the player
- * @param {GameObject} ground The ground of the level
- * @param {GameObject[]} sceneObjects The current objects in the scene
+ * @param {Level} level The current game level
  */
-function animationTick(scene, player, sceneObjects, ground) {
+function animationTick(scene, level) {
+  const {
+    goalArea, ground, player, objects, limits,
+  } = level;
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
 
   scene.clear();
-  scene.draw([ground, ...sceneObjects, player]);
+  scene.draw([ground, ...objects, player]);
+  scene.draw(goalArea, false);
+
+  if (player.parkingBreak && level.checkGoal()) {
+    runSimulation(false, false);
+
+    new Noty({
+      text: 'You reached the goal!',
+      type: 'success',
+    }).show();
+
+    return;
+  }
 
   player.update();
 
@@ -57,7 +70,7 @@ function animationTick(scene, player, sceneObjects, ground) {
     Stage.drawSensors(ids, player);
   }
 
-  collisions = scene.checkCollisions([...sceneObjects, player]);
+  collisions = scene.checkCollisions([...objects, player, ...limits]);
 
   if (collisions.length) {
     runSimulation(false);
@@ -76,14 +89,15 @@ function animationTick(scene, player, sceneObjects, ground) {
  *
  * @param {Car} player The car of the player
  * @param {GameOBject[]} sceneObjects The current objects in the scene
+ * @param {GameObject[]} limits The limits of the scenario
  * @return {Object} The new state of the player's car brain
  */
-function brainTick(player, sceneObjects) {
+function brainTick(player, sceneObjects, limits) {
   const brainCode = codeMirror.getValue();
-  const carInstructions = { sensors: player.sensors };
+  const carInstructions = { sensors: player.sensors, memory: player.brainState.memory };
   let newBrainState = null;
 
-  player.updateSensors(sceneObjects);
+  player.updateSensors([...sceneObjects, ...limits]);
   Interface.updateSensorsDisplay(player.sensors);
 
   eval.call({}, `(${brainCode})`)(carInstructions); // eslint-disable-line no-eval
@@ -94,6 +108,7 @@ function brainTick(player, sceneObjects) {
   newBrainState.sensors = player.sensors;
 
   player.brainState = newBrainState;
+  player.parkingBreak = newBrainState.parkingBreak;
 }
 
 /**
@@ -103,21 +118,22 @@ function brainTick(player, sceneObjects) {
  * @since 0.2.0
  *
  * @param {Boolean} play If the simulation should be played
+ * @param {Boolean} reset If the game should be resetted
  */
-function runSimulation(play) {
+function runSimulation(play, reset = true) {
   const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
   const scene = new Scene(canvas);
-  const { ground, objects, player } = currentLevel;
+  const { objects, player, limits } = currentLevel;
 
   if (play && !animationTicker) {
     animationTicker = setInterval(
-      () => animationTick(scene, player, objects, ground),
+      () => animationTick(scene, currentLevel),
       1000 / Constants.FRAMES_PER_SECOND,
     );
 
     brainTicker = setInterval(
-      () => brainTick(player, objects),
+      () => brainTick(player, objects, limits),
       1000 / Constants.BRAIN_TICKS_PER_SECOND,
     );
   } else if (!play) {
@@ -127,7 +143,9 @@ function runSimulation(play) {
     animationTicker = null;
     brainTicker = null;
 
-    animationTick(scene, player, objects, ground);
+    if (reset) {
+      animationTick(scene, currentLevel);
+    }
   }
 }
 

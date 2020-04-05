@@ -6,10 +6,11 @@ const CANVAS_WIDTH = 1280;
 const CAR_HEIGHT = 100;
 const CAR_WIDTH = 200;
 const COLORS = {
-  player: '#DB2929',
-  sensor: '#EEEEEE',
   asphalt: '#282B2A',
   generic: ['#F7DBD7', '#CBBFB0', '#FAEACB', '#BDC2C2', '#739194', '#88BCE8', '#9CC0E7', '#FCFCFC'],
+  goalArea: '#FFD700',
+  player: '#DB2929',
+  sensor: '#EEEEEE',
 };
 const FRAMES_PER_SECOND = 24;
 const LS_CODE_KEY = 'parkit_usercode';
@@ -17,10 +18,10 @@ const MAX_ANGLE = 35;
 const MAX_ANGLE_CHANGE_PER_TICK = 0.6;
 const MAX_SPEED_CHANGE_PER_TICK = 0.6;
 const PIXELS_PER_METER = 10;
-const SENSOR_BREAKPOINTS_QT = 10;
-const SENSOR_METERS_RANGE = 8;
+const SENSOR_METERS_RANGE = 7;
 const SENSORS_QT = 20;
 const SENSOR_RANGE = SENSOR_METERS_RANGE * PIXELS_PER_METER;
+const SENSOR_BREAKPOINTS_QT = SENSOR_RANGE;
 const SPEED_RATIO = 60;
 
 export default {

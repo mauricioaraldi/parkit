@@ -35,16 +35,19 @@ export default class GameObject {
    * @author mauricio.araldi
    * @since 0.2.0
    *
-   * @param {CanvasRenderingContext2D} ctx Canvas context do render content
    * @param {GameObject[]} objects The objects to be drawn
+   * @param {Boolean} [fill = true] If the object should be filled with color
    * @return {Boolean} If the objects were drawn
    */
-  draw(objects) {
+  draw(objects, fill = true) {
+    if (!Array.isArray(objects)) {
+      objects = [objects];
+    }
+
     objects.forEach((object) => {
       const { points } = object.polygon;
       let i = points.length - 1;
 
-      this.context.fillStyle = object.color;
       this.context.save();
       this.context.translate(object.polygon.pos.x, object.polygon.pos.y);
       this.context.beginPath();
@@ -56,7 +59,16 @@ export default class GameObject {
       }
 
       this.context.closePath();
-      this.context.fill();
+
+      if (fill) {
+        this.context.fillStyle = object.color;
+        this.context.fill();
+      } else {
+        this.context.strokeStyle = object.color;
+        this.context.lineWidth = 5;
+        this.context.stroke();
+      }
+
       this.context.restore();
     });
 

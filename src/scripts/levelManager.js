@@ -41,8 +41,10 @@ function getLevel(
         {
           angle: 0,
           speed: 0,
+          memory: {},
         },
         0,
+        false,
         true,
         sensorRange,
         sensorBreakpointQt,
@@ -78,6 +80,20 @@ function getLevel(
         ),
       ],
       new GameObject(0, 0, canvasWidth, canvasHeight, 0, colors.asphalt),
+      new GameObject(
+        carWidth + 25,
+        5,
+        carWidth + 90,
+        carHeight + 10,
+        0,
+        colors.goalArea,
+      ),
+      [
+        new GameObject(-1, -2, canvasWidth + 2, 1),
+        new GameObject(-1, canvasHeight + 1, canvasWidth + 2, 1),
+        new GameObject(-2, 0, 1, canvasHeight),
+        new GameObject(canvasWidth + 1, 0, 1, canvasHeight),
+      ],
     );
 
     default:
