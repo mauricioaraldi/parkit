@@ -1,6 +1,6 @@
 {
   "name": "parkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vehicle parking sensor simulation to train JS",
   "homepage": "https://github.com/mauricioaraldi/parkit",
   "private": true,

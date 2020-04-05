@@ -1,4 +1,4 @@
-# ParkIt 0.1.0
+# ParkIt 0.2.0
 
 Vehicle parking sensor simulation, where you implement the logic to the sensor in JS. A nice way to train your skills.
 
