@@ -38,7 +38,7 @@ Noty.overrideDefaults({
  */
 function animationTick(scene, level) {
   const {
-    goalArea, ground, player, objects,
+    goalArea, ground, player, objects, limits,
   } = level;
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
@@ -70,7 +70,7 @@ function animationTick(scene, level) {
     Stage.drawSensors(ids, player);
   }
 
-  collisions = scene.checkCollisions([...objects, player]);
+  collisions = scene.checkCollisions([...objects, player, ...limits]);
 
   if (collisions.length) {
     runSimulation(false);
