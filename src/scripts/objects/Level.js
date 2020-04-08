@@ -6,6 +6,7 @@
  * @param {Object} ground The ground layout
  * @param {GameObject} goalArea The goal area the player should reach
  * @param {GameObject[]} limits The limits of the level
+ * @param {Function} goalReachedAction Action that executes as soon as goal is reached
  */
 export default class Level {
   /**
@@ -16,13 +17,15 @@ export default class Level {
    * @param {Object} ground The ground layout
    * @param {GameObject} goalArea The goal area the player should reach
    * @param {GameObject[]} limits The limits of the level
+   * @param {Function} goalReachedAction Action that executes as soon as goal is reached
    */
-  constructor(player, objects, ground, goalArea, limits) {
+  constructor(player, objects, ground, goalArea, limits, goalReachedAction) {
     this.player = player;
     this.objects = objects;
     this.ground = ground;
     this.goalArea = goalArea;
     this.limits = limits;
+    this.goalReachedAction = goalReachedAction;
   }
 
   /**
