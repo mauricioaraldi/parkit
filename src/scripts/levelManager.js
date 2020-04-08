@@ -102,7 +102,7 @@ function getLevel(
           type: 'success',
         }).show();
 
-        dataLayer.push({ event: 'game_won' });
+        ga('send', 'event', 'general', 'game_won');
       },
     );
 
