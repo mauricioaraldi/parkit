@@ -102,7 +102,7 @@ function getLevel(
           type: 'success',
         }).show();
 
-        ga('send', 'event', 'general', 'game_won');
+        gtag('send', 'event', 'general', 'game_won');
       },
     );
 
