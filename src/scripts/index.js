@@ -38,7 +38,7 @@ Noty.overrideDefaults({
  */
 function animationTick(scene, level) {
   const {
-    goalArea, ground, player, objects, limits,
+    goalArea, ground, player, objects, limits, goalReachedAction,
   } = level;
   const highlightSensors = document.querySelectorAll('.sensor.active');
   let collisions = null;
@@ -50,10 +50,7 @@ function animationTick(scene, level) {
   if (player.parkingBreak && level.checkGoal()) {
     runSimulation(false, false);
 
-    new Noty({
-      text: 'You reached the goal!',
-      type: 'success',
-    }).show();
+    goalReachedAction();
 
     return;
   }

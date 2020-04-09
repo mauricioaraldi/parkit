@@ -1,3 +1,5 @@
+import Noty from 'noty';
+
 import Car from './objects/Car';
 import Level from './objects/Level';
 import GameObject from './objects/GameObject';
@@ -94,6 +96,17 @@ function getLevel(
         new GameObject(-2, 0, 1, canvasHeight),
         new GameObject(canvasWidth + 1, 0, 1, canvasHeight),
       ],
+      () => {
+        new Noty({
+          text: 'You reached the goal!',
+          type: 'success',
+        }).show();
+
+        gtag('event', 'won', {
+          'event_category': 'play',
+          'event_label': 'level_1',
+        });
+      },
     );
 
     default:
