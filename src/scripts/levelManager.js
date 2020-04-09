@@ -103,8 +103,8 @@ function getLevel(
         }).show();
 
         gtag('event', 'won', {
-          'event_category': 'play',
-          'event_label': 'level_1',
+          event_category: 'play',
+          event_label: 'level_1',
         });
       },
     );

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Park it - Documentation</title>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-162872466-1');
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8"/>
+  </head>
+  <body>
+    <header>
+      <h1>Park it Documentation</h1>
+    </header>
+
+    <main>
+      <h2>General overview</h2>
+      <p>
+        In the code editor you must implement everything inside one method (usually called 'carBrain') that will receive one parameter, which is the player's car (so, usually, called 'car'). This parameter represents the car that should have it's attributes changed to actually change the car in the game.
+
+        So, for example, just by adding the line 'car.speed = 5;' inside the function, which would result in:
+
+        function carBrain(car) {
+          car.speed = 5;
+        }
+
+        The car would move forward with a speed of 5. You can also use other properties, like reading informations from the sensors. Let's say you want to speed up and stop if something comes up in front of the car, with a proximity of less than 50. You could use the sensor 1 (there are 20). Your code would look like:
+
+        function carBrain(car) {
+          car.speed = 5;
+
+          if (car.sensors[1].reading < 50) {
+            car.speed = 0;
+          }
+        }
+      </p>
+
+      <h2>Available properties</h2>
+      <p>The parameter that is passed to the function has the following available properties:</p>
+      <ul>
+        <li>
+          <h3>speed</h3>
+          <p>Represents the speed that the car should be. This doesn't really mean it is the current speed of the car. That's because the car takes some time to actually change it's speed (it takes some time to accelerate and decelerate).</p>
+
+          <h4>Example</h4>
+          <p>
+            function carBrain(car) {
+              car.speed = 5;
+            }
+          </p>
+        </li>
+
+        <li>
+          <h3>angle</h3>
+          <p>Represents the angle that the car should be. As the speed, this also doesn't mean it is the current angle of the car. It also may take some time for the car to reach the desired angle.</p>
+
+          <h4>Example</h4>
+          <p>
+            function carBrain(car) {
+              car.angle = 10;
+            }
+          </p>
+        </li>
+
+        <li>
+          <h3>sensors</h3>
+          <p>Represents the sensors of the car, which detect objects close to the car. These values cannot be setted, only read. The value of the sensor will be according to the proximity of other objects. If no other objects are in range, the value will be kept at the sensor's maximum range. Different cars might have different sensors range. Value 0 means an object has touched the car (and you lost). Use the property 'reading' from the sensor to get it's current value. To make sensors be drawed in the animation, you can highlight sensors by clicking their number in the interface (will be show only while the animation is playing).</p>
+
+          <h4>Example</h4>
+          <p>
+            function carBrain(car) {
+              if (car.sensors[1].reading <= 10) {
+                car.speed = 0;
+              }
+            }
+          </p>
+        </li>
+
+        <li>
+          <h3>parkingBreak</h3>
+          <p>When the parking break is on, the car cannot move. This is meant to make clear that you are declaring the car as parked, so that the result can be processed. In other words, you need to activate the parking break to win the challenge.</p>
+
+          <h4>Example</h4>
+          <p>
+            function carBrain(car) {
+              car.parkingBreak = true;
+            }
+          </p>
+        </li>
+
+        <li>
+          <h3>memory</h3>
+          <p>You can use this object to store values. Those values doesn't change the car behavior in any way. They are meant only for decision making developer's code. Declaring variables inside this function will not really work, since they will be redeclared every tick of the animation. Use this to store values.</p>
+
+          <h4>Example</h4>
+          <p>
+            function carBrain(car) {
+              car.memory.rememberThis = 'yeah';
+            }
+          </p>
+        </li>
+      </ul>
+
+      <h2>Small example</h2>
+      <p>Let's use what we learned above to create a simple example code. Imagine you want the car to accelerate and get close to the other cars that are parked. You could use this code:</p>
+      <p>
+        function carBrain(car) {
+          car.speed = 10;
+          car.angle = 5;
+        }
+      </p>
+      <p>With actually only this code, the car will crash, since nothing is there to make it go straight again. Let's add the instruction to make it go straight after getting close enough:</p>
+      <p>
+        function carBrain(car) {
+          car.speed = 10;
+          car.angle = 5;
+
+          if (car.sensors[3].reading <= 30) {
+            car.angle = 0;
+          }
+        }
+      </p>
+      <p>Almost works, but there's still a problem. When the sensor reaches 30, it tries to make the car go straight again. This moves the car, making the sensor 3 move away from the object, which makes the reading go above 30 again. Then the car starts going to angle 5 again, until sensor 3 reaches 30 and keep repeating this over and over.</p>
+      <p>So you actually need to keep stored the information that you are already close to the other cars. Let's use the car's memory for that:</p>
+      <p>
+        function carBrain(car) {
+          car.speed = 10;
+
+          if (car.memory.closeToOtherCars === false) {
+            car.angle = 5;
+          }
+
+          if (car.sensors[3].reading <= 30) {
+            car.angle = 0;
+            car.memory.closeToOtherCars = true;
+          }
+        }
+      </p>
+      <p>Remember that you need to keep informations stored in the memory, not in variables declared inside the function itself. Variables declared inside the function will actually lose their value at the end of each tick of the animation (there are more than 20 ticks each second).</p>
+      <p>With this code you should be able to achieve the desired result! That's it. You are now ready to get there and park that car! Good luck =)</p>
+    </main>
+  </body>
+</html>
