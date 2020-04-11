@@ -1,0 +1,31 @@
+body {
+  font-family: 'Open Sans';
+  margin: 0;
+  padding: 0 5%;
+}
+
+h1, h4 {
+  text-align: center;
+}
+
+span.code,
+div.code > p {
+  background: #EAEAEA;
+}
+
+span.code {
+  padding: 0 8px;
+}
+
+div.code {
+  margin: 32px 0;
+  text-align: center;
+}
+
+div.code > p {
+  display: inline-block;
+  margin: 0;
+  padding: 8px;
+  text-align: left;
+  white-space: pre;
+}
