@@ -117,7 +117,6 @@ function brainTick(player, sceneObjects, limits) {
  * @param {Boolean} play If the simulation should be played
  * @param {Boolean} reset If the game should be resetted
  */
-function runSimulation(play, reset = true) {
   const currentLevel = LevelManager.getLevel(CURRENT_LEVEL);
   const canvas = document.querySelector('canvas');
   const scene = new Scene(canvas);
