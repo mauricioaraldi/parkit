@@ -7,6 +7,7 @@
   "scripts": {
     "build": "webpack --config webpack/webpack.config.prod.js",
     "dev": "webpack-dev-server --open --config webpack/webpack.config.dev.js",
+    "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
