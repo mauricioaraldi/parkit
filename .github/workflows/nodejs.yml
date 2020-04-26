@@ -17,9 +17,9 @@ jobs:
       with:
         node-version: 12.x
     - name: Install  
-    - run: npm install
+      run: npm install
     - name: Build
-    - run: npm run build
+      run: npm run build
   lint:
     name: Lint project code
     runs-on: ubuntu-latest
@@ -33,5 +33,3 @@ jobs:
         run: npm install
       - name: Lint
         run: npm run lint
-      env:
-        CI: true
