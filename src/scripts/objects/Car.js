@@ -115,13 +115,15 @@ export default class Car extends GameObject {
     let angleChange = 0;
 
     if (this.angle !== angleState) {
-      const angleDiff = angleState - this.angle;
+      const angleDiff = (angleState - this.angle);
 
       if (angleDiff > 0) {
         angleChange = Math.min(angleDiff, Constants.MAX_ANGLE_CHANGE_PER_TICK);
       } else if (angleDiff < 0) {
         angleChange = Math.max(angleDiff, -Constants.MAX_ANGLE_CHANGE_PER_TICK);
       }
+
+      angleChange *= (this.speed / Constants.ANGLE_TO_SPEED_RATIO);
     }
 
     this.angle += angleChange;
@@ -168,8 +170,8 @@ export default class Car extends GameObject {
    */
   update() {
     this.proccessCarBrainSpeed();
-    const brainAngleChange = this.proccessCarBrainAngle();
     const realSpeed = this.speed * (Math.abs(this.speed) / Constants.SPEED_RATIO);
+    const brainAngleChange = this.proccessCarBrainAngle();
 
     if (!realSpeed) {
       return;
@@ -185,15 +187,15 @@ export default class Car extends GameObject {
     this.polygon.pos.y = this.y;
 
     const points = this.polygon.points.map((point) => {
-      const centerX = point.x - this.width / 2;
-      const centerY = point.y - this.height / 2;
+      const centerX = point.x - this.width * 0.25;
+      const centerY = point.y - this.height * 0.5;
 
       const rotatedX = centerX * Math.cos(angleDiffRad) - centerY * Math.sin(angleDiffRad);
       const rotatedY = centerX * Math.sin(angleDiffRad) + centerY * Math.cos(angleDiffRad);
 
       return new SAT.Vector(
-        rotatedX + this.width / 2,
-        rotatedY + this.height / 2,
+        rotatedX + this.width * 0.25,
+        rotatedY + this.height * 0.5,
       );
     });
 
