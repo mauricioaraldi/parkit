@@ -1,9 +1,9 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
@@ -17,9 +17,9 @@ jobs:
       with:
         node-version: 12.x
     - name: Install  
-    - run: npm install
+      run: npm install
     - name: Build
-    - run: npm run build
+      run: npm run build
   lint:
     name: Lint project code
     runs-on: ubuntu-latest
@@ -33,5 +33,3 @@ jobs:
         run: npm install
       - name: Lint
         run: npm run lint
-      env:
-        CI: true
