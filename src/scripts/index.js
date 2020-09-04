@@ -102,11 +102,11 @@ function brainTick(player, sceneObjects, limits) {
   newBrainState = { ...player.brainState, ...carInstructions };
 
   if (newBrainState.angle > 0) {
-    newBrainState.angle = Math.min(newBrainState.angle, Constants.MAX_ANGLE_THRESHOLD);  
+    newBrainState.angle = Math.min(newBrainState.angle, Constants.MAX_ANGLE_THRESHOLD);
   } else if (newBrainState.angle < 0) {
     newBrainState.angle = Math.max(newBrainState.angle, -Constants.MAX_ANGLE_THRESHOLD);
   }
-  
+
   newBrainState.sensors = player.sensors;
 
   player.brainState = newBrainState;
