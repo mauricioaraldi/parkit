@@ -18,19 +18,18 @@ export default class Car extends GameObject {
   /**
    * @constructor
    *
-   * @param {String} color HEX color of the car
-   * @param {Number} x X position of the car
-   * @param {Number} y Y position of the car
-   * @param {Number} width Width of the car
-   * @param {Number} height Height of the car
-   * @param {Number} angle Angle of rotation of the car
-   * @param {Object} brainState Current brain state of the car
-   * @param {Number} speed Current speed of the car
+   * @param {String} color HEX color
+   * @param {Number} x X position
+   * @param {Number} y Y position
+   * @param {Number} width Width
+   * @param {Number} height Height
+   * @param {Number} angle Angle of rotation
+   * @param {Object} brainState Current brain state
+   * @param {Number} speed Current speed
    * @param {Boolean} parkingBreak The current state of the parking break
    * @param {Boolean} withSensors Of the car should have distance sensors
    * @param {Number} sensorRange The range of the sensors in pixels
-   * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor of the
-   * car should have
+   * @param {Number} sensorBreakpointQt Numbers of breakpoints each sensor should have
    */
   constructor(color, x, y, width, height, angle, brainState, speed, parkingBreak,
     withSensors, sensorRange, sensorBreakpointQt) {
