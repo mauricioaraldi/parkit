@@ -76,7 +76,7 @@
 
         <li>
           <h3>sensors</h3>
-          <p>Represents the sensors of the car, which detect objects close to the car. These values cannot be setted, only read. The value of the sensor will be according to the proximity of other objects. If no other objects are in range, the value will be kept at the sensor's maximum range. Different cars might have different sensors range. Value 0 means an object has touched the car (and you lost). Use the property 'reading' from the sensor to get it's current value. To make sensors be drawed in the animation (so that you can see where the sensor is in the car), you can highlight sensors by clicking their number in the interface (will be show only while the animation is playing).</p>
+          <p>Represents the sensors of the car, which detect objects close to the car. These values cannot be setted, only read. The value of the sensor will be according to the proximity of other objects. If no other objects are in range, the value will be kept at the sensor's maximum range. Different cars might have different sensors range. Value 0 means an object has touched the car (and you lost). Use the property 'reading' from the sensor to get it's current value. To draw the sensors in the animation (so that you can see where the sensor is in the car), you can highlight sensors by clicking their number in the interface (will be show only while the animation is playing).</p>
 
           <h4>Example</h4>
           <div class="code">
@@ -102,7 +102,7 @@
 
         <li>
           <h3>memory</h3>
-          <p>You can use this object to store values. Those values doesn't change the car behavior in any way. They are meant only for decision making in the developer's code. Declaring variables inside this function will not really work, since they will be redeclared every tick of the animation. Use this to store values.</p>
+          <p>You can use this object to store values. Those values doesn't change the car behavior in any way. They are meant only for decision making in the developer's code. Declaring variables inside 'carBran' function will not really work, since they will be redeclared every tick of the animation. Instead, use this to store values.</p>
 
           <h4>Example</h4>
           <div class="code">
@@ -132,7 +132,7 @@
   }
 }</p>
       </div>
-      <p>Almost works, but there's still a problem. When the sensor reaches 30, it tries to make the car go straight again. This moves the front of the car away from the objects, making also the sensor 3 move away from the object, which makes the reading go above 30 again. Then the car starts going to angle 5 again, until sensor 3 reaches 30 and keep repeating this over and over.</p>
+      <p>Almost works, but there's still a problem. When the sensor reaches 30, it tries to make the car go straight again. This moves the front of the car away from the objects, causing also the sensor 3 to move away from the object, which makes the reading go above 30 again. Then the car starts going to angle 5 again, until sensor 3 reaches 30 and keep repeating this over and over.</p>
       <p>So you actually need to keep stored the information that you are already close to the other cars. Let's use the car's memory for that:</p>
       <div class="code">
         <p>function carBrain(car) {
@@ -148,7 +148,7 @@
   }
 }</p>
       </div>
-      <p>Remember that you need to keep informations stored in the memory, not in variables declared inside the function itself. Variables declared inside the function will actually lose their value at the end of each tick of the animation (there are more than 20 ticks each second).</p>
+      <p>Remember that you need to keep informations stored in the memory, not in variables declared inside the function itself. Variables declared inside the 'carBrain' will actually lose their value at the end of each tick of the animation (there are more than 20 ticks each second).</p>
       <p>With this code you should be able to achieve the desired result! That's it. You are now ready to get there and park that car! Good luck =)</p>
     </main>
   </body>
