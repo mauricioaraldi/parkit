@@ -1,0 +1,825 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"align",
+				"align-self\tproperty"
+			],
+			[
+				"auto",
+				"autoFavorite"
+			],
+			[
+				"text-",
+				"text-align\tproperty"
+			],
+			[
+				"curret",
+				"currentComic\tfn "
+			],
+			[
+				"load",
+				"loadingAutoFavorite\tbool "
+			],
+			[
+				"favori",
+				"favoriteTimer"
+			],
+			[
+				"random",
+				"randomComicNumber\tnum "
+			],
+			[
+				"fa",
+				"favorites"
+			],
+			[
+				"re",
+				"retrieveImage"
+			],
+			[
+				"comic",
+				"comicNumberAsString\tstr "
+			],
+			[
+				"comi",
+				"comicNumberAsString\tnum "
+			],
+			[
+				"D",
+				"documentation"
+			],
+			[
+				"vaca",
+				"vacancies"
+			],
+			[
+				"C",
+				"Company"
+			],
+			[
+				"articl",
+				"articleId\t? "
+			],
+			[
+				"Van",
+				"vacancy"
+			],
+			[
+				"Vac",
+				"vacancy"
+			],
+			[
+				"sear",
+				"searchResult\t? "
+			],
+			[
+				"sea",
+				"searchResult"
+			],
+			[
+				"searc",
+				"searchResult\t? "
+			],
+			[
+				"rea",
+				"readablePrice"
+			],
+			[
+				"burguer",
+				"burguerPrice"
+			],
+			[
+				"remove",
+				"removeDisabled"
+			],
+			[
+				"ingredi",
+				"ingredient"
+			],
+			[
+				"render",
+				"renderIngredientControllers"
+			],
+			[
+				"ingre",
+				"ingredients"
+			],
+			[
+				"in",
+				"ingredients"
+			],
+			[
+				"Ingre",
+				"IngredientTypes"
+			],
+			[
+				"inl",
+				"inline-block\tdisplay"
+			],
+			[
+				"wid",
+				"width\tproperty"
+			],
+			[
+				"grid",
+				"grid-gap\tproperty"
+			],
+			[
+				"Burg",
+				"BurguerBuilder"
+			],
+			[
+				"paddi",
+				"padding\tproperty"
+			],
+			[
+				"backgr",
+				"background-color\tproperty"
+			],
+			[
+				"space",
+				"space-between\tjustify-content"
+			],
+			[
+				"tet",
+				"text-align\tproperty"
+			],
+			[
+				"group",
+				"groupMolecules\t{} "
+			],
+			[
+				"mole",
+				"molecules\t{} "
+			],
+			[
+				"moleu",
+				"molecules\t{} "
+			],
+			[
+				"current",
+				"currentQuantity\tnum "
+			],
+			[
+				"fomru",
+				"formulaWithoutGroup\t? "
+			],
+			[
+				"gropu",
+				"groupMultiplier\tnum "
+			],
+			[
+				"grou",
+				"groupMultiplier\t{} "
+			],
+			[
+				"gorup",
+				"groupMultiplier\tnum "
+			],
+			[
+				"for",
+				"for\tfor (…) {…}"
+			],
+			[
+				"span",
+				"spanElement\t? "
+			],
+			[
+				"text",
+				"textArray\t? "
+			],
+			[
+				"paddin",
+				"padding-bottom\tproperty"
+			],
+			[
+				"rotate",
+				"rotateX()\ttransform"
+			],
+			[
+				"new",
+				"newLetter\tstr "
+			],
+			[
+				"tetx",
+				"textContent\t? "
+			],
+			[
+				"back",
+				"backElement\t{} "
+			],
+			[
+				"trans",
+				"transform-origin\tproperty"
+			],
+			[
+				"roat",
+				"rotateX()\ttransform"
+			],
+			[
+				"font-s",
+				"font-size\tproperty"
+			],
+			[
+				"groupE",
+				"groupEndingCharacter\t? "
+			],
+			[
+				"grous",
+				"groupStartCharacter\t? "
+			],
+			[
+				"final",
+				"finalText\tstr "
+			],
+			[
+				"numbe",
+				"numberToCheck"
+			],
+			[
+				"number",
+				"numberToCheck\t? "
+			],
+			[
+				"parag",
+				"paragraphsText\t? "
+			],
+			[
+				"search",
+				"searchResultsBodyContent"
+			],
+			[
+				"searh",
+				"searchResultsBodyContent\t[] "
+			],
+			[
+				"searchR",
+				"searchResultsBodyContent\t[] "
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"checkTabl",
+				"checkTableReferences"
+			],
+			[
+				"async",
+				"asyncResult\t? "
+			],
+			[
+				"lowerCar",
+				"lowerCarLeft\t? "
+			],
+			[
+				"lowerCa",
+				"setLowerCarLeft"
+			],
+			[
+				"upperCa",
+				"upperCarLeft\t? "
+			],
+			[
+				"project",
+				"Project"
+			],
+			[
+				"Course",
+				"CourseAccordion"
+			],
+			[
+				"Cou",
+				"CourseAccordion"
+			],
+			[
+				"setP",
+				"setParallaxRef"
+			],
+			[
+				"para",
+				"parallaxRef"
+			],
+			[
+				"parl",
+				"parallaxRef"
+			],
+			[
+				"par",
+				"paragraphTwo\t? "
+			],
+			[
+				"inner",
+				"innerHeight"
+			],
+			[
+				"scroll",
+				"scrollBreakpoints"
+			],
+			[
+				"scrol",
+				"scrollTo"
+			],
+			[
+				"form",
+				"formContainer"
+			],
+			[
+				"Ma",
+				"MagicWandSVG"
+			],
+			[
+				"hiddenM",
+				"hiddenMobileRange"
+			],
+			[
+				"Gen",
+				"GentonaMedium"
+			],
+			[
+				"Gentona",
+				"GentonaSemiBold"
+			],
+			[
+				"furni",
+				"furnitureType\t? "
+			],
+			[
+				"Team",
+				"TeamMDX"
+			],
+			[
+				"hiddenBr",
+				"hiddenBroadRangeRule"
+			],
+			[
+				"hiddenMidl",
+				"hiddenMiddleRangeRule"
+			],
+			[
+				"hidden",
+				"hiddenMobileRule"
+			],
+			[
+				"defau",
+				"defaultProps"
+			],
+			[
+				"social",
+				"socialEngineering"
+			],
+			[
+				"socia",
+				"socialEngineering"
+			],
+			[
+				"sha",
+				"shakeHands"
+			],
+			[
+				"SocialS",
+				"SocialSVG"
+			],
+			[
+				"Social",
+				"SocialPlainSVG"
+			],
+			[
+				"Paper",
+				"PaperPlaneTrailSVG"
+			],
+			[
+				"paperP",
+				"paperPlane"
+			],
+			[
+				"Magi",
+				"MagnifierSVG"
+			],
+			[
+				"coins",
+				"CoinsSVG"
+			],
+			[
+				"Pap",
+				"PaperPlaneTrailSVG"
+			],
+			[
+				"svg",
+				"svg-icons"
+			],
+			[
+				"down",
+				"downFloorQueue"
+			],
+			[
+				"goTO",
+				"goToFloorAndIndicate"
+			],
+			[
+				"go",
+				"goToFloor"
+			],
+			[
+				"goTo",
+				"goToFloorAndIndicate"
+			],
+			[
+				"goin",
+				"goingUpIndicator"
+			],
+			[
+				"dest",
+				"destinationQueue"
+			],
+			[
+				"floor",
+				"floorNum"
+			],
+			[
+				"desti",
+				"destinationQueue"
+			],
+			[
+				"destia",
+				"destinationDirection"
+			],
+			[
+				"dow",
+				"downFloorQueue"
+			],
+			[
+				"dw",
+				"downFloorQueue"
+			],
+			[
+				"curre",
+				"currentMax"
+			],
+			[
+				"floo",
+				"floorQueue"
+			],
+			[
+				"get",
+				"getPressedFloors"
+			],
+			[
+				"currentM",
+				"currentMin"
+			],
+			[
+				"destinatio",
+				"destinationDirection"
+			],
+			[
+				"inde",
+				"queueIndex"
+			],
+			[
+				"flor",
+				"floorNum"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"pretti",
+				"HTMLPrettify: Set Prettify Preferences"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"mater",
+				"Material Theme: Activate theme"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 206.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader"
+	],
+	"file_history":
+	[
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/pages/Home.vue",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/README.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/pages/Login.vue",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/pages/NewAccount.vue",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/main.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/App.vue",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/components/Header.vue",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/dist/sw.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/sw.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/proxy.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/package.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/registerServiceWorker.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/server.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/Procfile",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/dist/service-worker.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/public/sw.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/constants.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/firebase.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/db.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/firebase.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/dist/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/.env",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/.env.local",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/babel.config.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src/pages",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/documentation.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/documentation.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/dist/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/objects/Car.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/constants.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/index.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/package.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/objects/Scene.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/src/scripts/levelManager.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/babel.config.js",
+		"/Users/mauriciocominaraldi/Library/Application Support/Sublime Text 3/Packages/User/.jsbeautifyrc",
+		"/Users/mauriciocominaraldi/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/.jsbeautifyrc.defaults.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/README.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/parkit/LICENSE",
+		"/Users/mauriciocominaraldi/Documents/Repositories/strapi/linkit-strapi-test/exports/graphql/schema.graphql",
+		"/Users/mauriciocominaraldi/Documents/Repositories/nextjs-website/.gitignore",
+		"/Users/mauriciocominaraldi/Documents/Repositories/nextjs-website/.eslintrc.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/nextjs-website/tsconfig.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/nextjs-website/package.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/nextjs-website/README.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/features/step_definitions/stepdefs.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/features/math_operation.feature",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/functions/math.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/cucumber.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/README.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/.gitignore",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/package.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/cucumbering/Readme.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/index.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/containers/BurguerBuilder.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/containers/Checkout.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/Burguer.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/containers/BurguerBuilder.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/App.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/IngredientControls.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/IngredientTypesAndPrices.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/Burguer.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/IngredientTypes.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/IngredientControls.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/IngredientController.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/Layout.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/enums/IngredientTypes.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/index.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/components/Layout.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/enums",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/.gitignore",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/README.md",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/public/manifest.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/public/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/App.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/burguer-builder/src/serviceWorker.ts",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/components/template.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/components/header.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/i18n/i18n.js",
+		"/Users/mauriciocominaraldi/Desktop/TwitchMuter.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/i18n/en.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/i18n/nl.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/pages/index.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/components/i18n.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/static/locales/i18n.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/next-env.d.ts",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/css/header.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/next.config.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test/package-lock.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/linkit-test.sublime-workspace",
+		"/Users/mauriciocominaraldi/Desktop/kata.js",
+		"/Users/mauriciocominaraldi/Desktop/Article Material/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/flip-flip-board/src/index.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/flip-flip-board/package.json",
+		"/Users/mauriciocominaraldi/Desktop/flip-test.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/myseconddocker/Dockerfile",
+		"/Users/mauriciocominaraldi/Documents/Repositories/myseconddocker/package.json",
+		"/Users/mauriciocominaraldi/Documents/Repositories/myseconddocker/.dockerignore",
+		"/Users/mauriciocominaraldi/Documents/Repositories/myseconddocker/.gitignore",
+		"/Users/mauriciocominaraldi/Desktop/Article Material/style.css",
+		"/Users/mauriciocominaraldi/Desktop/Article Material/article.txt",
+		"/Users/mauriciocominaraldi/Downloads/LMS add in.xlam",
+		"/Users/mauriciocominaraldi/Downloads/wtoys-vb/AddinModule.vb",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/manifest.xml",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/taskpane/taskpane.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/commands/commands.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/dialogs/tableReference.html",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/commands/dialogs",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/commands/commands.html",
+		"/Users/mauriciocominaraldi/Desktop/staircase.txt",
+		"/Users/mauriciocominaraldi/Desktop/staircase.js",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/taskpane/taskpane.css",
+		"/Users/mauriciocominaraldi/Documents/Repositories/wordaddin/wordaddin/src/taskpane/taskpane.html",
+		"/Users/mauriciocominaraldi/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
+		"/Users/mauriciocominaraldi/Library/Application Support/Sublime Text 3/Packages/User/HTMLPrettify.sublime-settings",
+		"/Users/mauriciocominaraldi/Documents/Repositories/animations/App.js",
+		"/Users/mauriciocominaraldi/Desktop/article.txt",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/hooks/use-window-width.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/templates/cara.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/footer.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/hero.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/details.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/contact.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/team.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/course.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/form.tsx",
+		"/Users/mauriciocominaraldi/Documents/Repositories/mobile-course-landingpage/src/@lekoarts/gatsby-theme-cara/components/course-accordion.tsx"
+	],
+	"find":
+	{
+		"height": 71.0
+	},
+	"find_in_files":
+	{
+		"height": 307.0,
+		"where_history":
+		[
+			"/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader/src"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"getComic",
+			"getComin",
+			"vuefir",
+			"auth",
+			"firebase.js"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"folders":
+	[
+		{
+			"path": "/Users/mauriciocominaraldi/Documents/Repositories/xkcdreader"
+		}
+	],
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 33.0
+	},
+	"input":
+	{
+		"height": 105.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.doc":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"next-env.d.ts"
+			],
+			[
+				"hero",
+				"src/@lekoarts/gatsby-theme-cara/components/hero.tsx"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 209.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
