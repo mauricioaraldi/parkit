@@ -28,21 +28,13 @@
         So, for example, just by adding the line <span class="code">car.speed = 5;</span> inside the function, which would result in:
       </p>
       <div class="code">
-        <p>function carBrain(car) {
-  car.speed = 5;
-}</p>
+        <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.speed&#32;=&#32;5;<br/>}</p>
       </div>
       <p>
         The car would move forward with a speed of 5. You can also use other properties, like reading informations from the sensors. Let's say you want to speed up and stop if something comes up in front of the car, with a proximity of less than 50 (in this case, the distance is presented in pixels). You could use the sensor 1 (there are 20). Your code would look like:
       </p>
       <div class="code">
-        <p>function carBrain(car) {
-  car.speed = 5;
-
-  if (car.sensors[1].reading < 50) {
-    car.speed = 0;
-  }
-}</p>
+        <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.speed&#32;=&#32;5;<br/><br/>&#32;&#32;if&#32;(car.sensors[1].reading&#32;&gt;&#32;50)&#32;{<br/>&#32;&#32;&#32;&#32;car.speed&#32;=&#32;0;<br/>&#32;&#32;}<br/>}</p>
       </div>
 
       <h2>Available properties</h2>
@@ -54,9 +46,7 @@
 
           <h4>Example</h4>
           <div class="code">
-            <p>function carBrain(car) {
-  car.speed = 5;
-}</p>
+            <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.speed&#32;=&#32;5;<br/>}<br/></p>
           </div>
         </li>
 
@@ -66,9 +56,7 @@
 
           <h4>Example</h4>
           <div class="code">
-            <p>function carBrain(car) {
-  car.angle = 10;
-}</p>
+            <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.angle&#32;=&#32;10;<br/>}</p>
           </div>
         </li>
 
@@ -78,11 +66,7 @@
 
           <h4>Example</h4>
           <div class="code">
-            <p>function carBrain(car) {
-  if (car.sensors[1].reading <= 10) {
-    car.speed = 0;
-  }
-}</p>
+            <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;if&#32;(car.sensors[1].reading&#32;&gt;=&#32;10)&#32;{<br/>&#32;&#32;&#32;&#32;car.speed&#32;=&#32;0;<br/>&#32;&#32;}<br/>}</p>
           </div>
         </li>
 
@@ -92,9 +76,7 @@
 
           <h4>Example</h4>
           <div class="code">
-            <p>function carBrain(car) {
-  car.parkingBreak = true;
-}</p>
+            <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.parkingBreak&#32;=&#32;true;<br/>}</p>
           </div>
         </li>
 
@@ -104,9 +86,7 @@
 
           <h4>Example</h4>
           <div class="code">
-            <p>function carBrain(car) {
-  car.memory.rememberThis = 'yeah';
-}</p>
+            <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.memory.rememberThis&#32;=&#32;'yeah';<br/>}</p>
           </div>
         </li>
       </ul>
@@ -114,37 +94,16 @@
       <h2>Small example</h2>
       <p>Let's use what we learned above to create a simple example code. Imagine you want the car to accelerate and get close to the other cars that are parked. You could use this code:</p>
       <div class="code">
-        <p>function carBrain(car) {
-  car.speed = 10;
-  car.angle = 5;
-}</p>
+        <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.speed&#32;=&#32;10;<br/>&#32;&#32;car.angle&#32;=&#32;5;<br/>}</p>
       </div>
       <p>With actually only this code, the car will crash, since nothing is there to make it go straight again. Let's add the instruction to make it go straight after getting close enough:</p>
       <div class="code">
-        <p>function carBrain(car) {
-  car.speed = 10;
-  car.angle = 5;
-
-  if (car.sensors[3].reading <= 30) {
-    car.angle = 0;
-  }
-}</p>
+        <p>if&#32;(car.sensors[3].reading&#32;&gt;=&#32;30)&#32;{<br/>&#32;&#32;&#32;&#32;car.angle&#32;=&#32;0;<br/>&#32;&#32;}<br/>}</p>
       </div>
       <p>Almost works, but there's still a problem. When the sensor reaches 30, it tries to make the car go straight again. This moves the front of the car away from the objects, causing also the sensor 3 to move away from the object, which makes the reading go above 30 again. Then the car starts going to angle 5 again, until sensor 3 reaches 30 and keep repeating this over and over.</p>
       <p>So you actually need to keep stored the information that you are already close to the other cars. Let's use the car's memory for that:</p>
       <div class="code">
-        <p>function carBrain(car) {
-  car.speed = 10;
-
-  if (!car.memory.closeToOtherCars) {
-    car.angle = 5;
-  }
-
-  if (car.sensors[3].reading <= 30) {
-    car.angle = 0;
-    car.memory.closeToOtherCars = true;
-  }
-}</p>
+        <p>function&#32;carBrain(car)&#32;{<br/>&#32;&#32;car.speed&#32;=&#32;10;<br/><br/>&#32;&#32;if&#32;(!car.memory.closeToOtherCars)&#32;{<br/>&#32;&#32;&#32;&#32;car.angle&#32;=&#32;5;<br/>&#32;&#32;}<br/><br/>&#32;&#32;if&#32;(car.sensors[3].reading&#32;&gt;=&#32;30)&#32;{<br/>&#32;&#32;&#32;&#32;car.angle&#32;=&#32;0;<br/>&#32;&#32;&#32;&#32;car.memory.closeToOtherCars&#32;=&#32;true;<br/>&#32;&#32;}<br/>}</p>
       </div>
       <p>Remember that you need to keep informations stored in the memory, not in variables declared inside the function itself. Variables declared inside the 'carBrain' will actually lose their value at the end of each tick of the animation (there are more than 20 ticks each second).</p>
       <p>With this code you should be able to achieve the desired result! That's it. You are now ready to get there and park that car! Good luck =)</p>
