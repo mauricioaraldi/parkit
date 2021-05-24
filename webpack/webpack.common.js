@@ -4,7 +4,10 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: Path.resolve(__dirname, '../src/scripts/index.js'),
+  entry: {
+    main: Path.resolve(__dirname, '../src/scripts/index.js'),
+    documentation: Path.resolve(__dirname, '../src/scripts/documentation.js')
+  },
   output: {
     path: Path.join(__dirname, '../dist'),
     filename: '[name].js'
@@ -19,9 +22,9 @@ module.exports = {
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
       { from: Path.resolve(__dirname, '../public'), to: '', flatten: true },
-      { from: Path.resolve(__dirname, '../src/documentation.html'), to: '' },
     ]),
     new HtmlWebpackPlugin({
+      filename: 'index.html',
       template: Path.resolve(__dirname, '../src/index.html'),
       minify: {
         collapseWhitespace: true,
@@ -30,7 +33,21 @@ module.exports = {
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
         useShortDoctype: true
-      }
+      },
+      chunks: ['main'],
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'documentation.html',
+      template: Path.resolve(__dirname, '../src/documentation.html'),
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true
+      },
+      chunks: ['documentation'],
     })
   ],
   resolve: {
