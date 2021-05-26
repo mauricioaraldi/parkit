@@ -178,13 +178,96 @@ function loadCode() {
   return code;
 }
 
+/**
+ * Toggles the minimize of the sensors menu, changing the text of the button
+ *
+ * @author mauricio.araldi
+ * @since 0.4.0
+ */
+function toggleSensorsMinimize() {
+  const body = document.querySelector('body');
+  const minimizeButton = document.querySelector('#minimize');
+  const menu = document.querySelector('#menu');
+
+  if (minimizeButton.innerHTML === '-') {
+    minimizeButton.innerHTML = '+';
+  } else {
+    minimizeButton.innerHTML = '-';
+  }
+
+  menu.classList.toggle('minimized');
+
+  minimizeButton.setAttribute('disabled', true);
+  body.classList.add('no-scroll');
+  updateCodeEditorHeight(1500);
+
+  setTimeout(() => {
+    updateCodeEditorHeight();
+    body.classList.remove('no-scroll');
+    minimizeButton.removeAttribute('disabled');
+  }, 300);
+}
+
+/**
+ * Updates the height of the code editor
+ *
+ * @author mauricio.araldi
+ * @since 0.4.0
+ *
+ * @param {Number} [forceHeight] The height to be used. If not supplied, is auto detected based
+ * on window height
+ */
+function updateCodeEditorHeight(forceHeight) {
+  const codeMirrorElement = document.querySelector('.CodeMirror');
+  let codeMirrorHeight = forceHeight;
+  let codeMirrorTop;
+
+  if (!codeMirrorHeight) {
+    codeMirrorTop = codeMirrorElement.getClientRects()[0].top;
+    codeMirrorHeight = window.innerHeight - codeMirrorTop;
+  }
+
+  codeMirrorElement.style.height = `${codeMirrorHeight}px`;
+}
+
+/**
+ * Changes the font-size of the code editor
+ *
+ * @author mauricio.araldi
+ * @since 0.4.0
+ *
+ * @param {Boolean} [enlarge] Makes the font larger. If false, makes the font smaller
+ * @param {Number} [forceSize] Forces a specific font size in the editor
+ */
+function setCodeEditorFontSize(enlarge, forceSize) {
+  const codeMirrorElement = document.querySelector('.CodeMirror');
+
+  if (forceSize) {
+    codeMirrorElement.style.fontSize = `${forceSize}px`;
+  }
+
+  const FONT_SIZE_STEP = 2;
+  let fontSize = parseInt(codeMirrorElement.style.fontSize, 10) || 16;
+
+  if (enlarge) {
+    fontSize += FONT_SIZE_STEP;
+  } else {
+    fontSize -= FONT_SIZE_STEP;
+  }
+
+  codeMirrorElement.style.fontSize = `${fontSize}px`;
+}
+
 export default {
   checkSensorsHighlighted,
   createSensorInputs,
   loadCode,
   saveCode,
+  setCodeEditorFontSize,
   setHighlightSensor,
   toggleHighlightSection,
   toggleHighlightSensors,
+  toggleSensorsMinimize,
+  updateCodeEditorHeight,
   updateSensorsDisplay,
 };

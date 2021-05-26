@@ -1,70 +1,134 @@
+:root {
+  /** Colors */
+  --color-black: #000000;
+
+  --color-code-editor-bg: #2f1e2e;
+
+  --color-highlight: #FED8B1;
+
+  --color-primary-bg: #ffffff;
+
+  /** Font sizes */
+  --font-size-s: 16px;
+  --font-size-m: 20px;
+  --font-size-l: 24px;
+
+  /** Sizes */
+  --size-s: 8px;
+  --size-m: 16px;
+  --size-l: 32px;
+
+  --size-max-canvas-height: 300px;
+  --size-max-content-width: 1280px;
+}
+
 body {
   font-family: 'Open Sans';
   margin: 0;
   padding: 0;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
+header {
+  background-color: var(--color-primary-bg);
+  left: 0;
+  padding: var(--size-s) var(--size-m);
+  position: absolute;
+  top: 0;
+}
+
+header > h1 {
+  font-size: var(--font-size-l);
+  margin: 0;
+}
+
 #documentation {
-  margin-left: 16px;
+  margin-left: var(--size-m);
 }
 
 #documentation,
 button {
-  font-size: 16px;
+  font-size: var(--font-size-s);
 }
 
 canvas {
   display: block;
+  height: var(--size-max-canvas-height);
   margin: 0 auto;
+  width: var(--size-max-content-width);
 }
 
-h1, h3 {
-  margin: 8px 0;
+h3 {
+  margin: var(--size-s) 0;
   padding: 0;
   text-align: center;
 }
 
-#sensors {
-  text-align: center;
+#minimize {
+  margin-right: var(--spacing-s);
 }
 
-#sensors > h3 {
+#menu {
+  text-align: center;
+  max-width: var(--size-max-content-width);
+  margin: auto;
+  padding: var(--size-s) 0;
+}
+
+#controls {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.controls-group > h3 {
   display: inline-block;
 }
 
-#sensors > label,
-.sensor-section > label {
-  border: 1px solid #000000;
-  margin-left: 16px;
+.controls-group > label,
+.sensors-group > label {
+  border: 1px solid var(--color-black);
+  margin-left: var(--size-m);
 }
 
-#sensors > div {
+#sensors {
+  height: 88px;
   display: flex;
   justify-content: space-around;
+  overflow: hidden;
+  transition: all ease 300ms;
 }
 
-.sensor-section > h4 {
+#menu.minimized > #sensors {
+  height: 0px;
+}
+
+.sensors-group > h4 {
   display: inline-block;
-  margin: 8px 0;
+  margin: var(--size-s) 0;
 }
 
-.sensor-section > div {
+.sensors-group > div {
   display: flex;
-  grid-gap: 8px;
+  grid-gap: var(--size-s);
 }
 
 .sensor {
   cursor: pointer;
-  border: 1px solid #000000;
+  border: 1px solid var(--color-black);
 }
 
 .sensor.active,
 .sensor.active input {
-  background-color: #FED8B1;
+  background-color: var(--color-highlight);
 }
 
 .sensor > span {
-  margin: 0 8px;
+  margin: 0 var(--size-s);
 }
 
 .sensor > input {
@@ -73,11 +137,14 @@ h1, h3 {
 }
 
 input {
-  font-size: 16px;
-	width: 30px;
+  font-size: var(--font-size-s);
+	width: var(--size-l);
 }
 
-#controls {
-  margin: 8px 0;
-  text-align: center;
+#code-editor-controls {
+  background-color: var(--color-code-editor-bg);
+  display: flex;
+  flex-direction: row;
+  gap: var(--size-s);
+  padding: var(--size-s);
 }

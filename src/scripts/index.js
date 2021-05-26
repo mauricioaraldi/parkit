@@ -169,12 +169,10 @@ window.onload = () => {
     },
   );
 
-  const codeMirrorElement = document.querySelector('.CodeMirror');
-  const codeMirrorTop = codeMirrorElement.getClientRects()[0].top;
-  const codeMirrorHeight = window.innerHeight - codeMirrorTop;
   const code = Interface.loadCode();
 
-  codeMirrorElement.style.height = `${codeMirrorHeight}px`;
+  Interface.updateCodeEditorHeight();
+  Interface.setCodeEditorFontSize(null, 16);
 
   if (code) {
     codeMirror.setValue(code);
@@ -195,6 +193,9 @@ window.onload = () => {
   runSimulation(false);
 
   /* Actions */
+  document.querySelector('#minimize').addEventListener('click', () => Interface.toggleSensorsMinimize());
+  document.querySelector('#code-editor-smaller-font').addEventListener('click', () => Interface.setCodeEditorFontSize(false));
+  document.querySelector('#code-editor-bigger-font').addEventListener('click', () => Interface.setCodeEditorFontSize(true));
   document.querySelector('#play').addEventListener('click', () => runSimulation(true));
   document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
   document.querySelector('#save').addEventListener('click', () => Interface.saveCode(codeMirror.getValue()));
@@ -208,4 +209,5 @@ window.onload = () => {
   });
 
   document.querySelector('#highlight-all-sensors').checked = false;
+  document.querySelector('#position-middle').checked = true;
 };

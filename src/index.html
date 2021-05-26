@@ -22,51 +22,77 @@
 
     <canvas></canvas>
 
-    <div id="sensors">
-      <h3>Sensors</h3>
-      <label>
-        <span>Highlight all sensors</span>
-        <input type="checkbox" id="highlight-all-sensors" name="highlight-all-sensors"/>
-      </label>
-      <div>
-        <div id="front-right-section" class="sensor-section">
+    <div id="menu">
+      <div id="controls">
+        <button id="minimize">-</button>
+
+        <div class="controls-group">
+          <h3>Sensors</h3>
+          <label>
+            <span>Highlight all sensors</span>
+            <input type="checkbox" id="highlight-all-sensors" name="highlight-all-sensors"/>
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <h3>Position</h3>
+          <label>
+            <span>Middle</span>
+            <input type="radio" name="position" id="position-middle" value="position-middle"/>
+          </label>
+          <label>
+            <span>Bottom right</span>
+            <input type="radio" name="position" id="position-bottom-right" value="position-bottom-right"/>
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <button id="play">Play</button>
+          <button id="stop">Stop</button>
+          <button id="save">Save code</button>
+          <a id="documentation" href="/parkit/documentation.html" target="_blank">See documentation</a>
+        </div>
+      </div>
+
+      <div id="sensors">
+        <div id="front-right-section" class="sensors-group">
           <h4>Front Right</h4>
 
           <label>
-            <span>Highlight section</span>
+            <span>Highlight</span>
             <input type="checkbox" id="highlight-front-right-section" name="highlight-front-right-section"/>
           </label>
 
           <div></div>
         </div>
 
-        <div id="rear-right-section" class="sensor-section">
+        <div id="rear-right-section" class="sensors-group">
           <h4>Rear Right</h4>
 
           <label>
-            <span>Highlight section</span>
+            <span>Highlight</span>
             <input type="checkbox" id="highlight-rear-right-section" name="highlight-rear-right-section"/>
           </label>
 
           <div></div>
         </div>
 
-        <div id="rear-left-section" class="sensor-section">
+        <div id="rear-left-section" class="sensors-group">
           <h4>Rear Left</h4>
 
           <label>
-            <span>Highlight section</span>
+            <span>Highlight</span>
             <input type="checkbox" id="highlight-rear-left-section" name="highlight-rear-left-section"/>
           </label>
 
           <div></div>
         </div>
 
-        <div id="front-left-section" class="sensor-section">
+        <div id="front-left-section" class="sensors-group">
           <h4>Front Left</h4>
 
           <label>
-            <span>Highlight section</span>
+            <span>Highlight</span>
             <input type="checkbox" id="highlight-front-left-section" name="highlight-front-left-section"/>
           </label>
 
@@ -75,13 +101,12 @@
       </div>
     </div>
 
-    <div id="controls">
-      <button id="play">Play</button>
-      <button id="stop">Stop</button>
-      <button id="save">Save code</button>
-      <a id="documentation" href="/parkit/documentation.html" target="_blank">See documentation</a>
+    <div>
+      <div id="code-editor-controls">
+        <button id="code-editor-smaller-font">A-</button>
+        <button id="code-editor-bigger-font">A+</button>
+      </div>
+      <textarea id="code-editor"></textarea>
     </div>
-
-    <textarea id="code-editor"></textarea>
   </body>
 </html>
