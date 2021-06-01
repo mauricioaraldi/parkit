@@ -1,12 +1,11 @@
 :root {
   /** Colors */
   --color-black: #000000;
+  --color-white: #ffffff;
 
-  --color-code-editor-bg: #2f1e2e;
+  --color-code-editor-bg: #2F1E2E;
 
   --color-highlight: #FED8B1;
-
-  --color-primary-bg: #ffffff;
 
   /** Font sizes */
   --font-size-s: 16px;
@@ -33,7 +32,7 @@ body {
 }
 
 header {
-  background-color: var(--color-primary-bg);
+  background-color: var(--color-white);
   left: 0;
   padding: var(--size-s) var(--size-m);
   position: absolute;
@@ -78,6 +77,15 @@ h3 {
   padding: var(--size-s) 0;
 }
 
+#menu.bottom-right {
+  background-color: var(--color-white);
+  padding-right: 32px;
+  position: absolute;
+  right: 0px;
+  top: calc(var(--size-max-canvas-height) + 32px);
+  z-index: 10;
+}
+
 #controls {
   align-items: center;
   display: flex;
@@ -85,14 +93,40 @@ h3 {
   justify-content: space-between;
 }
 
+#menu.bottom-right > #controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 300px;
+}
+
 .controls-group > h3 {
   display: inline-block;
 }
 
-.controls-group > label,
-.sensors-group > label {
+.controls-group label,
+.sensors-group label {
   border: 1px solid var(--color-black);
   margin-left: var(--size-m);
+}
+
+#minimize {
+  grid-row: 1;
+  grid-column: 2;
+  margin-left: auto;
+}
+
+#position-controls {
+  margin: 0 var(--size-l);
+}
+
+#position-controls > div {
+  display: inline-block;
+}
+
+#animation-controls {
+  grid-row: 1;
+  grid-column: 1;
 }
 
 #sensors {
@@ -107,6 +141,11 @@ h3 {
   height: 0px;
 }
 
+#menu.bottom-right > #sensors {
+  flex-direction: column;
+  height: auto;
+}
+
 .sensors-group > h4 {
   display: inline-block;
   margin: var(--size-s) 0;
@@ -115,6 +154,7 @@ h3 {
 .sensors-group > div {
   display: flex;
   grid-gap: var(--size-s);
+  justify-content: center;
 }
 
 .sensor {

@@ -179,12 +179,12 @@ function loadCode() {
 }
 
 /**
- * Toggles the minimize of the sensors menu, changing the text of the button
+ * Toggles the minimize of the menu, changing the text of the button
  *
  * @author mauricio.araldi
  * @since 0.4.0
  */
-function toggleSensorsMinimize() {
+function toggleMenuMinimize() {
   const body = document.querySelector('body');
   const minimizeButton = document.querySelector('#minimize');
   const menu = document.querySelector('#menu');
@@ -258,6 +258,27 @@ function setCodeEditorFontSize(enlarge, forceSize) {
   codeMirrorElement.style.fontSize = `${fontSize}px`;
 }
 
+/**
+ * Toggles the position of the menu
+ *
+ * @author mauricio.araldi
+ * @since 0.4.0
+ *
+ * @param {String} value The value to select
+ */
+function toggleMenuPosition(value) {
+  const menu = document.querySelector('#menu');
+
+  menu.classList.remove('middle');
+  menu.classList.remove('bottom-right');
+
+  menu.classList.add(value);
+
+  setTimeout(() => {
+    updateCodeEditorHeight();
+  }, 300);
+}
+
 export default {
   checkSensorsHighlighted,
   createSensorInputs,
@@ -267,7 +288,8 @@ export default {
   setHighlightSensor,
   toggleHighlightSection,
   toggleHighlightSensors,
-  toggleSensorsMinimize,
+  toggleMenuMinimize,
+  toggleMenuPosition,
   updateCodeEditorHeight,
   updateSensorsDisplay,
 };

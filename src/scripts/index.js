@@ -193,13 +193,17 @@ window.onload = () => {
   runSimulation(false);
 
   /* Actions */
-  document.querySelector('#minimize').addEventListener('click', () => Interface.toggleSensorsMinimize());
+  document.querySelector('#minimize').addEventListener('click', () => Interface.toggleMenuMinimize());
   document.querySelector('#code-editor-smaller-font').addEventListener('click', () => Interface.setCodeEditorFontSize(false));
   document.querySelector('#code-editor-bigger-font').addEventListener('click', () => Interface.setCodeEditorFontSize(true));
   document.querySelector('#play').addEventListener('click', () => runSimulation(true));
   document.querySelector('#stop').addEventListener('click', () => runSimulation(false));
   document.querySelector('#save').addEventListener('click', () => Interface.saveCode(codeMirror.getValue()));
   document.querySelector('#highlight-all-sensors').addEventListener('change', Interface.toggleHighlightSensors);
+
+  document.querySelectorAll('input[type=radio][name=menu-position]').forEach((element) => {
+    element.addEventListener('change', (ev) => Interface.toggleMenuPosition(ev.target.value));
+  });
 
   document.querySelectorAll('.sensor-section').forEach((element) => {
     const input = element.querySelector('input');
